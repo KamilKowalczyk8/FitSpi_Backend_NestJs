@@ -1,0 +1,20 @@
+src/
+│
+├── auth/
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   ├── auth.module.ts
+│   ├── dto/
+│   │   ├── login.dto.ts
+│   │   └── register.dto.ts
+│   └── guards/
+│       └── jwt-auth.guard.ts
+│
+├── users/
+│   ├── user.entity.ts
+│   └── users.module.ts
+│
+├── common/
+│   └── decorators/get-user.decorator.ts
+│
+├── main.ts
