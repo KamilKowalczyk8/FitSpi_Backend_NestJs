@@ -108,16 +108,21 @@ async register(@Body() dto: RegisterDto){
   async login(@Body() dto: LoginDto) {
     const email = dto.email.trim().toLowerCase();
 
+console.log('🔍 Email z żądania:', email);
+
     const user = await this.userRepo.findOne({ where: { email }});
     if (!user || !user.is_active){
         throw new UnauthorizedException('Nieprawidłowe dane logowania');
     }
-
+    console.log('📌 Wprowadzane hasło:', dto.password);
+console.log('📌 Hash z bazy:', user.password);
+ console.log('👤 Użytkownik z bazy:', user);
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) {
         throw new UnauthorizedException('Nieprawidłowe dane logowania');
     }
 
+ console.log('🔐 Czy hasło pasuje:', isMatch);
     const token = this.generateToken(user);
 
     return { user: this.safeUser(user), token };
@@ -130,6 +135,14 @@ async register(@Body() dto: RegisterDto){
         email: user.email,
         role: user.role_id,
     };
+
+const token = this.jwtService.sign(payload, {
+    expiresIn: '24h',
+    issuer: 'FitSpi',
+    audience: 'your-app-client',
+  });
+
+  console.log('✅ Token wygenerowany:', token);
 
     return this.jwtService.sign(payload, {
         expiresIn: '24h',

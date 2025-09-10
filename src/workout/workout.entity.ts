@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { User } from 'src/users/user.entity';
 import { Exercise } from 'src/exercises/exercise.entity';
+import { WorkoutType } from './workout-type.enum';
 
 @Entity('workout')
 export class Workout{
@@ -37,4 +38,11 @@ export class Workout{
     // ćwiczeniami, TypeORM zapisze też te ćwiczenia automatycznie
     @OneToMany(() => Exercise, (exercise) => exercise.workout, { cascade: true })
     exercises: Exercise[];
+
+    @Column({
+    type: 'enum',
+    enum: WorkoutType,
+    default: WorkoutType.Training, // domyślnie 1
+    })
+    workout_type: WorkoutType;
 }

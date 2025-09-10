@@ -46,12 +46,14 @@ export class User {
     // Hashowanie hasła przed zapisaniem/aktualizacją
     @BeforeInsert()
     @BeforeUpdate()
-    async hashPassword(){
-        if(this.password){
+    async hashPassword() {
+    if (this.password && !this.password.startsWith('$2b$')) 
+        {
             const salt = await bcrypt.genSalt(12);
             this.password = await bcrypt.hash(this.password, salt);
         }
     }
+
 
     //Służy do sprawdzenia, czy podane hasło pasuje do 
     // zahashowanego hasła w bazie (np. przy logowaniu).

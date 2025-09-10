@@ -14,7 +14,7 @@ export class WorkoutService {
     ) {}
 
     async create(input: CreateWorkoutInput, user: User): Promise<WorkoutResponse>{
-        const workout = this.workoutRepo.create({ ...input, user });
+        const workout = this.workoutRepo.create({ ...input, user, workout_type: input.workout_type ?? undefined, });
         const saved = await this.workoutRepo.save(workout);
         
         return{
@@ -23,6 +23,31 @@ export class WorkoutService {
             description: saved.description,
             created_at: saved.created_at,
         };
+    }
+
+    async editNameWorkout(
+        workoutId: number,
+        userId: number,
+        newNameWorkout: string,
+    ): Promise<WorkoutResponse>{
+        const workout = await this.workoutRepo.findOne({
+            where: { id: workoutId, user: { user_id: userId } },
+        });
+
+        if (!workout){
+            throw new Error('Nie znaleziono takiego treningu')
+        }
+
+        workout.description = newNameWorkout;
+
+        const updated = await this.workoutRepo.save(workout);
+
+        return {
+            id: updated.id,
+            date: updated.date,
+            description: updated.description,
+            created_at: updated.created_at,
+        }
     }
 
     //Pobiera wszystkie treningi użytkownika na podstawie jego userId

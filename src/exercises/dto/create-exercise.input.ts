@@ -1,5 +1,6 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { WeightUnits } from '../weight_units.enum';
-import { IsEnum, IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
 
 export class CreateExerciseInput {
   @IsString()

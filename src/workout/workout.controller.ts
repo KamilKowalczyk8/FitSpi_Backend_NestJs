@@ -4,6 +4,8 @@ import {
   Body,
   UseGuards,
   Get,
+  Param,
+  Patch,
 } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -12,6 +14,7 @@ import { GetUser } from '../common/decorators/get-user.decorator';
 import { User } from '../users/user.entity';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { create } from 'domain';
+import { UpdateWorkoutDescriptionDto } from './dto/update-workout-description.dto';
 
 @ApiTags('Workouts')
 @ApiBearerAuth()
@@ -30,5 +33,15 @@ export class WorkoutController {
     @ApiOperation({ summary: 'Pobierz wszystkie treningi użytkownika' })
     findAll(@GetUser() user: User) {
         return this.workoutService.findAllByUser(user.user_id);
+    }
+
+    @Patch(':id/description')
+    @ApiOperation({ summary: 'Edytuj tytuł danego treningu'})
+    updateDescription(
+        @Param('id') id: number,
+        @Body() dto: UpdateWorkoutDescriptionDto,
+        @GetUser() user: User,
+    ){
+        return this.workoutService.editNameWorkout(id, user.user_id, dto.description);
     }
 }

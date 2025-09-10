@@ -41,6 +41,8 @@ async register(@Body() dto: RegisterDto, @Res() res: Response){
 @ApiBody({ type: LoginDto })
 @ApiResponse({ status: 200, description: 'Zalogowano pomyślnie' })
 async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res:Response){
+    
+    console.log('DTO CLASS:', dto);
     const { token, user } = await this.authService.login(dto);
 
     //Ustawia ciasteczko token (JWT) dla autoryzacji użytkownika. 

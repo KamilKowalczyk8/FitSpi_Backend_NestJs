@@ -7,7 +7,7 @@ import {
   Validate,
   ValidateIf,
 } from 'class-validator';
-import { MatchPasswords } from '../validators/match-passwords.validator'; // to utworzymy niżej
+import { MatchPasswords } from '../validators/match-passwords.validator'; 
 
 export class RegisterDto {
   @ApiProperty({ example: 'Jan' })
