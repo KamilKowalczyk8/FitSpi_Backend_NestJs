@@ -4,4 +4,4 @@ global:
 scrape_configs:
   - job_name: 'nestjs-app'
     static_configs:
-      - targets: ['backend:4000']
+      - targets: ['backendNest:4000']

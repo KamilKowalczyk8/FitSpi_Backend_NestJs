@@ -49,19 +49,20 @@ async function bootstrap() {
     )
     .build();
 
-    //tworzenie  dokumentacji swagger
+    //dokumentacja swagger
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api/docs', app, document);
 
+    
+
     //uruchomienie serwera
-    await app.listen(process.env.PORT || 4000);
+    // nasłuch na wszystkich interfejsach w kontenerze
+    await app.listen(process.env.PORT || 4000, '0.0.0.0');
     console.log(`🚀 Serwer działa na http://localhost:${process.env.PORT || 4000}`);
     console.log(`📚 Swagger: http://localhost:${process.env.PORT || 4000}
     /api/docs`);
 
-    //Kod tworzy backend w NestJS i dodaje do niego kluczowe funkcje. 
-    // ✔ Działa z zmiennymi środowiskowymi (.env), CORS i ciasteczkami. 
     // ✔ Swagger generuje dokumentację API (http://localhost:4000/api/docs). 
-    // ✔ Globalna walidacja pilnuje poprawności danych użytkownika.
+   
 }
 bootstrap();

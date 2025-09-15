@@ -112,7 +112,7 @@ describe('AuthService', () => {
       password: 'StrongP@ss1',
     });
 
-    expect(result.token).toBe('mocked-jwt-token');
+    expect(result.access_token).toBe('mocked-jwt-token');
     expect(result.user.email).toBe('jan@example.com');
   });
 });

@@ -1,20 +1,29 @@
-# 1. Bazowy obraz Node.js
-FROM node:20
-
-# 2. Katalog roboczy
+# 1. Stage build
+FROM node:20 AS builder
 WORKDIR /app
 
-# 3. Kopiowanie package.json i package-lock.json
+# Kopiujemy package.json i package-lock.json
 COPY package*.json ./
 
-# 4. Instalacja zależności
+# Instalujemy zależności (dev + prod)
 RUN npm install
 
-# 5. Kopiowanie reszty kodu
+# Kopiujemy resztę kodu
 COPY . .
 
-# 6. Kompilacja NestJS (jeśli TypeScript)
-RUN npm install --no-optional
+# Budujemy NestJS -> powstaje dist/
+RUN npm run build
 
-# 7. Start
-CMD ["npm", "run", "start:prod"]
+# 2. Stage runtime
+FROM node:20 AS runner
+WORKDIR /app
+
+# Kopiujemy tylko potrzebne pliki z buildera
+COPY --from=builder /app/dist ./dist
+COPY package*.json ./
+
+# Instalujemy tylko zależności produkcyjne
+RUN npm install --omit=dev
+
+# Uruchamiamy NestJS w trybie prod
+CMD ["node", "dist/main.js"]

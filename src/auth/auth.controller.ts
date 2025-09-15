@@ -25,9 +25,11 @@ export class AuthController{
 @Post('register')
 @ApiBody({ type: RegisterDto })
 @ApiResponse({ status: 201, description: 'Zarejestrowano użytkownika' })
-async register(@Body() dto: RegisterDto, @Res() res: Response){
-    const user = await this.authService.register(dto);
-    res.status(201).json(user);
+async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Response) {
+ const { user, token } = await this.authService.register(dto);
+ // res.cookie('token', token, { httpOnly: true, maxAge: 24*60*60*1000 });
+
+  return { success: true, user, access_token: token };
 }
 
 //---------------------------------------------------------------------------------------------------------------------------
@@ -40,23 +42,17 @@ async register(@Body() dto: RegisterDto, @Res() res: Response){
 @HttpCode(200)
 @ApiBody({ type: LoginDto })
 @ApiResponse({ status: 200, description: 'Zalogowano pomyślnie' })
-async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res:Response){
-    
-    console.log('DTO CLASS:', dto);
-    const { token, user } = await this.authService.login(dto);
+async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
+  const { user, access_token } = await this.authService.login(dto);
 
-    //Ustawia ciasteczko token (JWT) dla autoryzacji użytkownika. 
-    // ✔ httpOnly: true zabezpiecza przed dostępem przez JavaScript. 
-    // ✔ secure: true wymusza HTTPS w produkcji. 
-    // ✔ sameSite: 'strict' chroni przed atakami CSRF. 
-    // ✔ maxAge ustawia ważność ciasteczka na 24h
-    res.cookie('token', token,{
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 24 * 60 * 60 * 1000,
-    });
-    return { success: true, user};
+ /* res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 24 * 60 * 60 * 1000,
+  });*/
+
+  return { success: true, user, access_token };
 }
 
 //---------------------------------------------------------------------------------------------------------------------------

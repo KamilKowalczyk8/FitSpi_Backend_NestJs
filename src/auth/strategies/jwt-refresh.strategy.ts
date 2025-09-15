@@ -15,8 +15,8 @@ export class JwtRefreshStrategy extends PassportStrategy(JwtStrategyBase, 'jwt-r
       ]),
       ignoreExpiration: false,
       secretOrKey: secret,
-      issuer: 'your-app-name',
-      audience: 'your-app-client',
+      issuer: 'FitSpi',
+      audience: 'client',
     });
   }
   async validate(payload: any) {

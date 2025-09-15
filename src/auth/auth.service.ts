@@ -115,8 +115,8 @@ console.log('🔍 Email z żądania:', email);
         throw new UnauthorizedException('Nieprawidłowe dane logowania');
     }
     console.log('📌 Wprowadzane hasło:', dto.password);
-console.log('📌 Hash z bazy:', user.password);
- console.log('👤 Użytkownik z bazy:', user);
+    console.log('📌 Hash z bazy:', user.password);
+    console.log('👤 Użytkownik z bazy:', user);
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) {
         throw new UnauthorizedException('Nieprawidłowe dane logowania');
@@ -125,31 +125,29 @@ console.log('📌 Hash z bazy:', user.password);
  console.log('🔐 Czy hasło pasuje:', isMatch);
     const token = this.generateToken(user);
 
-    return { user: this.safeUser(user), token };
+    return { user: this.safeUser(user), access_token: token };
+
   }
 
 
-  private generateToken(user: User): string {
+ public generateToken(user: User): string {
     const payload: JwtPayload = {
         sub: user.user_id,
         email: user.email,
         role: user.role_id,
     };
 
-const token = this.jwtService.sign(payload, {
-    expiresIn: '24h',
-    issuer: 'FitSpi',
-    audience: 'your-app-client',
-  });
-
-  console.log('✅ Token wygenerowany:', token);
-
-    return this.jwtService.sign(payload, {
+    const token = this.jwtService.sign(payload, {
         expiresIn: '24h',
         issuer: 'FitSpi',
         audience: 'your-app-client',
     });
-    }
+
+    console.log('✅ Token wygenerowany:', token);
+
+    return token;
+}
+
 
     private safeUser(user: User){
         const { password, ...safeData } = user;
