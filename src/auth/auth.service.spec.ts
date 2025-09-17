@@ -50,7 +50,7 @@ describe('AuthService', () => {
 
     const result = await service.register(dto);
 
-    expect(result.token).toBe('mocked-jwt-token');
+    expect(result.access_token).toBe('mocked-jwt-token');
     expect(result.user.email).toBe('jan@example.com');
   });
 

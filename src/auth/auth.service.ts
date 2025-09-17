@@ -18,7 +18,6 @@ import { ConfigService } from '@nestjs/config';
 import { ApiTags, ApiResponse, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Role } from '../users/role.enum';
 
-@ApiTags('Auth')
 @Injectable()
 export class AuthService{
 
@@ -59,11 +58,6 @@ private validatePassword(password: string): { valid: boolean; errors?: string[] 
  return errors.length === 0 ? { valid: true } : { valid: false, errors };
 }
 
-
-@Post('register')
-@ApiOperation({ summary: 'Rejestracja nowego użytkownika' })
-@ApiResponse({ status: 201, description: 'Zarejestrowano pomyślnie' })
-@ApiResponse({ status: 400, description: 'Nieprawidłowe dane' })
 async register(@Body() dto: RegisterDto){
     const email = dto.email.trim().toLowerCase();
 
@@ -96,15 +90,9 @@ async register(@Body() dto: RegisterDto){
 
     //generowanie tokena jwt
     const token = this.generateToken(user);
-
-    return { user: this.safeUser(user), token };
+  return { user: this.safeUser(user), access_token: token };
 }
 
-
-@Post('login')
-  @ApiOperation({ summary: 'Logowanie użytkownika' })
-  @ApiResponse({ status: 200, description: 'Zalogowano pomyślnie' })
-  @ApiResponse({ status: 401, description: 'Błędny e-mail lub hasło' })
   async login(@Body() dto: LoginDto) {
     const email = dto.email.trim().toLowerCase();
 
@@ -123,9 +111,8 @@ console.log('🔍 Email z żądania:', email);
     }
 
  console.log('🔐 Czy hasło pasuje:', isMatch);
-    const token = this.generateToken(user);
-
-    return { user: this.safeUser(user), access_token: token };
+      const token = this.generateToken(user);
+  return { user: this.safeUser(user), access_token: token };
 
   }
 

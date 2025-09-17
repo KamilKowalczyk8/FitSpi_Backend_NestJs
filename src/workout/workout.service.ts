@@ -5,25 +5,41 @@ import { Workout } from './workout.entity';
 import { CreateWorkoutInput } from './dto/create-workout.input';
 import { WorkoutResponse } from './dto/workout.response';
 import { User } from '../users/user.entity';
+import { WorkoutType } from './workout-type.enum';
 
 @Injectable()
 export class WorkoutService {
     constructor(
         @InjectRepository(Workout)
         private readonly workoutRepo: Repository<Workout>,
+
+        @InjectRepository(User)
+        private readonly userRepo: Repository<User>,
     ) {}
 
-    async create(input: CreateWorkoutInput, user: User): Promise<WorkoutResponse>{
-        const workout = this.workoutRepo.create({ ...input, user, workout_type: input.workout_type ?? undefined, });
+    async create(input: CreateWorkoutInput, user: User): Promise<WorkoutResponse> {
+        const date = input.date ? new Date(input.date) : new Date();
+
+    // użyj bezpośrednio user_id z tokena
+        const workout = this.workoutRepo.create({ 
+            ...input,
+            date,
+            user: { user_id: user.user_id }, // <-- wstawiamy tylko id, TypeORM zrobi relację
+            workout_type: input.workout_type ?? WorkoutType.Training,
+        });
+
+        console.log('Tworzę trening:', workout);
+
         const saved = await this.workoutRepo.save(workout);
-        
-        return{
+
+        return {
             id: saved.id,
             date: saved.date,
             description: saved.description,
             created_at: saved.created_at,
         };
     }
+
 
     async editNameWorkout(
         workoutId: number,

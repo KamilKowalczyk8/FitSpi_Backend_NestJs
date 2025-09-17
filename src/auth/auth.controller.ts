@@ -24,12 +24,12 @@ export class AuthController{
 
 @Post('register')
 @ApiBody({ type: RegisterDto })
-@ApiResponse({ status: 201, description: 'Zarejestrowano użytkownika' })
+@ApiOperation({ summary: 'Rejestracja nowego użytkownika' })
+@ApiResponse({ status: 201, description: 'Zarejestrowano pomyślnie' })
+@ApiResponse({ status: 400, description: 'Nieprawidłowe dane' })
 async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Response) {
- const { user, token } = await this.authService.register(dto);
- // res.cookie('token', token, { httpOnly: true, maxAge: 24*60*60*1000 });
-
-  return { success: true, user, access_token: token };
+    const { user, access_token } = await this.authService.register(dto);
+    return { success: true, user, access_token };
 }
 
 //---------------------------------------------------------------------------------------------------------------------------
@@ -41,17 +41,11 @@ async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Respon
 @Post('login')
 @HttpCode(200)
 @ApiBody({ type: LoginDto })
+@ApiOperation({ summary: 'Logowanie użytkownika' })
 @ApiResponse({ status: 200, description: 'Zalogowano pomyślnie' })
+@ApiResponse({ status: 401, description: 'Błędny e-mail lub hasło' })
 async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
   const { user, access_token } = await this.authService.login(dto);
-
- /* res.cookie('token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 24 * 60 * 60 * 1000,
-  });*/
-
   return { success: true, user, access_token };
 }
 

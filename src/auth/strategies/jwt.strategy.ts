@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(JwtStrategyBase) {
       ignoreExpiration: false,
       secretOrKey: secret,
       issuer: 'FitSpi',
-      audience: 'client',
+      audience: 'your-app-client',
     });
   }
     //Metoda validate() jest wywoływana po weryfikacji 
@@ -28,6 +28,6 @@ export class JwtStrategy extends PassportStrategy(JwtStrategyBase) {
         //Zwraca obiekt użytkownika – będzie on dostępny w 
         // kontrolerach pod @Req().user. 
         // Czyli np. req.user.email, req.user.role
-        return { id: payload.sub, email: payload.email, role: payload.role};
+        return { user_id: payload.sub, email: payload.email, role_id: payload.role };
     }
 }

@@ -26,6 +26,7 @@ export class WorkoutController {
     @Post()
     @ApiOperation({ summary: 'Stwórz nowy trening' })
     create(@Body() dto: CreateWorkoutInput, @GetUser() user: User){
+        console.log('Zalogowany user:', user);
         return this.workoutService.create(dto, user);
     }
 
