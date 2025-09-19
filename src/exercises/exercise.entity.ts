@@ -29,11 +29,7 @@ export class Exercise {
     @Column()
     day: string;
 
-    //Relacja wiele ćwiczeń → jeden użytkownik (ManyToOne). 
-    //Użytkownik ma tablicę ćwiczeń (user.exercises), 
-    // a usunięcie użytkownika powoduje automatyczne usunięcie 
-    // jego ćwiczeń (onDelete: 'CASCADE').
     @ManyToOne(() => Workout, (workout) => workout.exercises, { onDelete: 'CASCADE' })
-    workout: Workout;
+    workoutId: Workout;
 
 }

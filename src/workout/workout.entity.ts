@@ -36,7 +36,7 @@ export class Workout{
     //Zakłada, że w encji Exercise istnieje pole workout: Workout
     //cascade: true – oznacza, że zapisując trening z nowymi 
     // ćwiczeniami, TypeORM zapisze też te ćwiczenia automatycznie
-    @OneToMany(() => Exercise, (exercise) => exercise.workout, { cascade: true })
+    @OneToMany(() => Exercise, (exercise) => exercise.workoutId, { cascade: true })
     exercises: Exercise[];
 
     @Column({

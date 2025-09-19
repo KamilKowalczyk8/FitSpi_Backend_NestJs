@@ -36,7 +36,7 @@ export class ExerciseService {
         //.create(...) tworzy nowy obiekt klasy Exercise, 
         // ale go jeszcze nie zapisuje.
         //.save(...) — zapisuje ten obiekt do bazy danych.
-        const exercise = this.exerciseRepo.create({ ...dto, workout });
+        const exercise = this.exerciseRepo.create({ ...dto, workoutId:workout });
         const saved = await this.exerciseRepo.save(exercise);
 
         //Zwracamy tylko wybrane pola w strukturze ExerciseResponse, 
@@ -52,22 +52,16 @@ export class ExerciseService {
         };
     }
 
-    async findAllByUser( user_id: number): Promise<ExerciseResponse[]> {
+    async findAllByUser(user_id: number): Promise<ExerciseResponse[]> {
+        const exercises = await this.exerciseRepo
+        .createQueryBuilder('exercise')
+        .leftJoin('exercise.workout', 'workout')
+        .leftJoin('workout.user', 'user')
+        .where('user.user_id = :user_id', { user_id })
+        .orderBy('exercise.day', 'ASC')
+        .getMany();
 
-        //Tworzymy ręcznie zapytanie SQL (via QueryBuilder).
-        //Dołączamy dane użytkownika (leftJoinAndSelect), 
-        // filtrujemy po ID użytkownika.
-        //Sortujemy ćwiczenia rosnąco wg dnia.
-        const exercise = await this.exerciseRepo
-            .createQueryBuilder('exercise')
-            .leftJoinAndSelect('exercise.user', 'user')
-            .where('user.id = :userId', { user_id })
-            .orderBy('exercise.day', 'ASC')
-            .getMany();
-
-
-        //Konwertujemy dane z bazy na tablicę obiektów ExerciseResponse
-        return exercise.map((ex) => ({
+        return exercises.map((ex) => ({
             id: ex.id,
             name: ex.name,
             sets: ex.sets,
@@ -75,6 +69,6 @@ export class ExerciseService {
             weight: ex.weight,
             weightUnits: ex.weightUnits,
             day: ex.day,
-        }));
-    }
+    }));
+  }
 }
