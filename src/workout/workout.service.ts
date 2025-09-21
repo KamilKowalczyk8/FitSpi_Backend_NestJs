@@ -20,11 +20,11 @@ export class WorkoutService {
     async create(input: CreateWorkoutInput, user: User): Promise<WorkoutResponse> {
         const date = input.date ? new Date(input.date) : new Date();
 
-    // użyj bezpośrednio user_id z tokena
+    
         const workout = this.workoutRepo.create({ 
             ...input,
             date,
-            user: { user_id: user.user_id }, // <-- wstawiamy tylko id, TypeORM zrobi relację
+            user: { user_id: user.user_id }, 
             workout_type: input.workout_type ?? WorkoutType.Training,
         });
 
@@ -84,4 +84,19 @@ export class WorkoutService {
             created_at: wo.created_at,
         }));
     }
+
+
+    async deleteWorkout(workoutId: number, userId: number): Promise<{ success: boolean }> {
+    const workout = await this.workoutRepo.findOne({
+        where: { id: workoutId, user: { user_id: userId } },
+    });
+
+    if (!workout) {
+        throw new Error('Nie znaleziono takiego treningu lub nie należy do tego użytkownika');
+    }
+
+    await this.workoutRepo.delete(workout.id); 
+    return { success: true };
+}
+
 }

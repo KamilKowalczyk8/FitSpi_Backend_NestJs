@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -36,6 +37,14 @@ export class WorkoutController {
         return this.workoutService.findAllByUser(user.user_id);
     }
 
+    
+
+    @Delete(':id')
+    @ApiOperation({ summary: 'Usuń dany trening' })
+    deleteWorkout(@Param('id') id: number, @GetUser() user: User) {
+        return this.workoutService.deleteWorkout(Number(id), user.user_id);
+    }
+
     @Patch(':id/description')
     @ApiOperation({ summary: 'Edytuj tytuł danego treningu'})
     updateDescription(
@@ -45,4 +54,6 @@ export class WorkoutController {
     ){
         return this.workoutService.editNameWorkout(id, user.user_id, dto.description);
     }
+
+    
 }
