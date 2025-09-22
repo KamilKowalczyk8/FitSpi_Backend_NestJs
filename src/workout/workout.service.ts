@@ -23,7 +23,7 @@ export class WorkoutService {
     
         const workout = this.workoutRepo.create({ 
             ...input,
-            date,
+            date: input.date,
             user: { user_id: user.user_id }, 
             workout_type: input.workout_type ?? WorkoutType.Training,
         });

@@ -18,7 +18,7 @@ export class Workout{
 
     @Column({ type: 'date' })
     @Index()
-    date: Date;
+    date: string;
 
     @Column({ type: 'text', nullable: true })
     description?: string;

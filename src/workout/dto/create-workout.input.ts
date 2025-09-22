@@ -5,7 +5,7 @@ import { WorkoutType } from '../workout-type.enum';
 export class CreateWorkoutInput {
   @ApiProperty({ example: '2024-06-21' })
   @IsDateString()
-  date: Date;
+  date: string;
 
   @ApiProperty({ example: 'Upper body day', required: false })
   @IsOptional()

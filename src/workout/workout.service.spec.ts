@@ -41,7 +41,7 @@ describe('WorkoutService', () => {
 
   const workoutEntity: Workout = {
       id: 1,
-      date: new Date(),
+      date: '2025-09-13',
       description: 'Testowy trening',
       created_at: new Date(),
       user: mockUser,
@@ -80,7 +80,7 @@ describe('WorkoutService', () => {
 
   it('should create and save a workout', async () => {
     const input: CreateWorkoutInput = {
-      date: new Date('2025-09-13'),
+      date: '2025-09-13',
       description: 'Testowy trening',
       workout_type: WorkoutType.Training,
     };

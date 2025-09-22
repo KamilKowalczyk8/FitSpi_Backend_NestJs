@@ -5,7 +5,7 @@ export class WorkoutResponse {
   id: number;
 
   @ApiProperty()
-  date: Date;
+  date: string;
 
   @ApiProperty({ required: false })
   description?: string;
