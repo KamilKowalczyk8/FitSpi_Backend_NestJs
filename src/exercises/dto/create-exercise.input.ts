@@ -3,9 +3,8 @@ import { WeightUnits } from '../weight_units.enum';
 import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
 
 export class CreateExerciseInput {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+  @IsInt()
+  templateId: number; 
 
   @IsNumber()
   @IsPositive()

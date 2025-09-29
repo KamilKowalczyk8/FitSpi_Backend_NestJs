@@ -6,10 +6,11 @@ import { ExerciseController } from './exercise.controller';
 import { User } from '../users/user.entity';
 import { Workout } from 'src/workout/workout.entity';
 import { WorkoutModule } from 'src/workout/workout.module';
+import { ExerciseTemplate } from './exercises_template/exercise-template.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Exercise, User, Workout]),
+    TypeOrmModule.forFeature([Exercise, User, Workout, ExerciseTemplate]),
     WorkoutModule,
   ],
   

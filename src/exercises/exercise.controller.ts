@@ -36,6 +36,8 @@ export class ExerciseController{
         return this.exerciseService.create(dto, user);
     }
 
+    
+
     //@Get() – odpowiada na GET /exercises
     //@GetUser() – znowu wyciąga dane użytkownika z tokena
     //Wywołuje metodę z serwisu: findAllByUser(...), która pobiera 
