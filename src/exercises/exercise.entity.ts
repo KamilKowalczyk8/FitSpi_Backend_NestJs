@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Workout } from 'src/workout/workout.entity';
-import { ExerciseTemplate } from 'src/exercises/exercises_template/exercise-template.entity';
+import { ExerciseTemplate } from 'src/exercises_template/exercise-template.entity';
 import { WeightUnits } from './weight_units.enum';
 
 @Entity()

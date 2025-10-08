@@ -6,7 +6,7 @@ import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { ExerciseResponse } from './dto/exercise.response';
 import { Workout } from 'src/workout/workout.entity';
-import { ExerciseTemplate } from 'src/exercises/exercises_template/exercise-template.entity';
+import { ExerciseTemplate } from 'src/exercises_template/exercise-template.entity';
 
 @Injectable()
 export class ExerciseService {

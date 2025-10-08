@@ -1,13 +1,11 @@
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { ExerciseTemplateService } from './exercise-template.service';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CreateExerciseTemplateDto } from '../dto/create-exercise-template.dto';
+import { CreateExerciseTemplateDto } from './dto/create-exercise-template.dto';
 import { ExerciseTemplate } from './exercise-template.entity';
 
 @ApiTags('Exercise Templates')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('exercise-templates')
 export class ExerciseTemplateController {
   constructor(private readonly templateService: ExerciseTemplateService) {}

@@ -2,7 +2,7 @@ import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ExerciseTemplate } from './exercise-template.entity';
-import { CreateExerciseTemplateDto } from '../dto/create-exercise-template.dto';
+import { CreateExerciseTemplateDto } from './dto/create-exercise-template.dto';
 
 @Injectable()
 export class ExerciseTemplateService {
