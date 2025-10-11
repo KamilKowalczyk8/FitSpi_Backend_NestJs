@@ -8,4 +8,5 @@ export class ExerciseResponse {
   weight: number;
   weightUnits: WeightUnits;
   day: string;
+  workoutId: number;
 }

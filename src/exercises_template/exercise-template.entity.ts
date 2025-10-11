@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Exercise } from 'src/exercises/exercise.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
 export class ExerciseTemplate {
@@ -7,4 +8,7 @@ export class ExerciseTemplate {
 
   @Column({ unique: true })
   name: string; 
+
+  @OneToMany(() => Exercise, (exercise) => exercise.template)
+  exercises: Exercise[];
 }

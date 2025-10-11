@@ -51,7 +51,7 @@ export class ExerciseService {
       weight: dto.weight,
       weightUnits: dto.weightUnits,
       day: dto.day,
-      workoutId: workout,
+      workout: workout,
     });
 
     const saved = await this.exerciseRepo.save(exercise);
@@ -64,6 +64,7 @@ export class ExerciseService {
       weight: saved.weight,
       weightUnits: saved.weightUnits,
       day: saved.day,
+      workoutId: saved.workout.id,
     };
   }
 
@@ -71,20 +72,26 @@ export class ExerciseService {
     const exercises = await this.exerciseRepo
       .createQueryBuilder('exercise')
       .leftJoinAndSelect('exercise.template', 'template')
-      .leftJoin('exercise.workoutId', 'workout')
+      .leftJoinAndSelect('exercise.workout', 'workout')
       .leftJoin('workout.user', 'user')
       .where('user.user_id = :user_id', { user_id })
       .orderBy('exercise.day', 'ASC')
       .getMany();
+    
+    return exercises.map((ex) => {
+      
+      const responseItem = {
+        id: ex.id,
+        name: ex.template.name,
+        sets: ex.sets,
+        reps: ex.reps,
+        weight: ex.weight,
+        weightUnits: ex.weightUnits,
+        day: ex.day,
+        workoutId: ex.workout.id,
+      };
 
-    return exercises.map((ex) => ({
-      id: ex.id,
-      name: ex.template.name, 
-      sets: ex.sets,
-      reps: ex.reps,
-      weight: ex.weight,
-      weightUnits: ex.weightUnits,
-      day: ex.day,
-    }));
+      return responseItem;
+    });
   }
 }
