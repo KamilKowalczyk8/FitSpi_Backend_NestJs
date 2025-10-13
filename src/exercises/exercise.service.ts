@@ -94,4 +94,22 @@ export class ExerciseService {
       return responseItem;
     });
   }
+  async deleteExercise(exerciseId: number, userId: number): Promise<{ success: boolean }> {
+    const exercise = await this.exerciseRepo.findOne({
+        where: { id: exerciseId},
+        relations: ['workout', 'workout.user'],
+    });
+
+    if (!exercise) {
+      throw new NotFoundException('Nie znaleziono ćwiczenia');
+    }
+
+    if (exercise.workout.user.user_id !== userId) {
+      throw new NotFoundException('To ćwiczenie nie należy do tego użytkownika');
+    }
+
+    await this.exerciseRepo.delete(exerciseId);
+    return { success: true };
+  }
+
 }

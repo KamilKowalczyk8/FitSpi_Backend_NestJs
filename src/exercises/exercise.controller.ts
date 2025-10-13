@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Delete, Param, ParseIntPipe } from '@nestjs/common';
 import { ExerciseService } from './exercise.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetUser } from '../common/decorators/get-user.decorator';
@@ -8,6 +8,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
+  ApiParam,
 } from '@nestjs/swagger';
 import { CreateExerciseInput } from './dto/create-exercise.input';
 import { ExerciseResponse } from './dto/exercise.response';
@@ -48,5 +49,14 @@ export class ExerciseController{
     @ApiResponse({ status: 200, description: 'Lista ćwiczeń', type: [ExerciseResponse] })
     findAll(@GetUser() user: User): Promise<ExerciseResponse[]> {
         return this.exerciseService.findAllByUser(user.user_id);
+    }
+
+
+    @Delete(':id')
+    @ApiOperation({ summary: 'Usuń cwiczenie po ID' })
+    @ApiParam({ name: 'id', required: true, description: 'ID ćwiczenia' })
+    @ApiResponse({ status: 200, description: 'Ćwiczenie zostało usunięte' })
+    delete(@Param('id', ParseIntPipe) id: number, @GetUser() user: User) {
+        return this.exerciseService.deleteExercise(id, user.user_id);
     }
 }
