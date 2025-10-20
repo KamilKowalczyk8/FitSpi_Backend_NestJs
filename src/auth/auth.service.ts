@@ -15,7 +15,6 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from './guards/jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
-import { ApiTags, ApiResponse, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Role } from '../users/role.enum';
 
 @Injectable()

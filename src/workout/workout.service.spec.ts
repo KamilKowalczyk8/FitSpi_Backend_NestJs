@@ -19,7 +19,7 @@ describe('WorkoutService', () => {
         is_active: true,
         role_id: 2,
         created_at: new Date(),
-        updated_at: new Date(), // <- tutaj ustaw prawidłową datę
+        updated_at: new Date(), 
         password: '',
         workouts: [],
         hashPassword: jest.fn(),

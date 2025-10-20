@@ -97,6 +97,6 @@ export class WorkoutService {
 
     await this.workoutRepo.delete(workout.id); 
     return { success: true };
-}
+    }
 
 }

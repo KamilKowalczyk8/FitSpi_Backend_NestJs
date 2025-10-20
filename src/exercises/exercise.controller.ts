@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Delete, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Delete, Param, ParseIntPipe, Patch } from '@nestjs/common';
 import { ExerciseService } from './exercise.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetUser } from '../common/decorators/get-user.decorator';
@@ -12,6 +12,7 @@ import {
 } from '@nestjs/swagger';
 import { CreateExerciseInput } from './dto/create-exercise.input';
 import { ExerciseResponse } from './dto/exercise.response';
+import { UpdateExerciseInput } from './dto/update-exercise.input';
 
 @ApiTags('Exercises')
 @ApiBearerAuth()
@@ -49,6 +50,18 @@ export class ExerciseController{
     @ApiResponse({ status: 200, description: 'Lista ćwiczeń', type: [ExerciseResponse] })
     findAll(@GetUser() user: User): Promise<ExerciseResponse[]> {
         return this.exerciseService.findAllByUser(user.user_id);
+    }
+
+    @Patch(':id') 
+    @ApiOperation({ summary: 'Zaktualizuj ćwiczenie po ID' })
+    @ApiParam({ name: 'id', required: true, description: 'ID ćwiczenia' })
+    @ApiResponse({ status: 200, description: 'Ćwiczenie zostało zaktualizowane', type: ExerciseResponse })
+    update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: UpdateExerciseInput,
+        @GetUser() user: User,
+    ): Promise<ExerciseResponse> {
+        return this.exerciseService.updateExercise(id, user.user_id, dto);
     }
 
 
