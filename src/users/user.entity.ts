@@ -12,6 +12,7 @@ import { Exercise } from 'src/exercises/exercise.entity';
 import * as bcrypt from 'bcryptjs';
 import { Role } from './role.enum';
 import { Workout } from 'src/workout/workout.entity';
+import { ClientLink } from 'src/client-links/entities/client-link.entity';
 
 @Entity('users')
 export class User {
@@ -66,7 +67,15 @@ export class User {
         const { password, ...userData } = this;
         return userData;
     }
+
+
     @OneToMany(() => Workout, (workout) => workout.user)
     workouts: Workout[];
+
+    @OneToMany(() => ClientLink, (link) => link.trainer)
+    clientsAsTrainer: ClientLink[];
+
+    @OneToMany(() => ClientLink, (link) => link.client)
+    linksAsClient: ClientLink[];
 
 }

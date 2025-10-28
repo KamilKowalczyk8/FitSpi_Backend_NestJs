@@ -6,6 +6,7 @@ import {
   ManyToOne,
   OneToMany,
   Index,
+  JoinColumn,
 } from 'typeorm';
 import { User } from 'src/users/user.entity';
 import { Exercise } from 'src/exercises/exercise.entity';
@@ -31,6 +32,13 @@ export class Workout{
     //onDelete: 'CASCADE' — usunięcie użytkownika usuwa wszystkie jego treningi
     @ManyToOne(() => User, (user) => user.workouts, { onDelete: 'CASCADE' })
     user: User;
+
+    @Column({ nullable: true })
+    creatorId: number; // Kto stworzył ten trening
+
+    @ManyToOne(() => User, { nullable: true })
+    @JoinColumn({ name: 'creatorId' })
+    creator: User;
 
     //Trening może mieć wiele ćwiczeń (OneToMany)
     //Zakłada, że w encji Exercise istnieje pole workout: Workout

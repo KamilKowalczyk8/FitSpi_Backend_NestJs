@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, W } from 'typeorm';
 import { Workout } from './workout.entity';
@@ -6,6 +6,10 @@ import { CreateWorkoutInput } from './dto/create-workout.input';
 import { WorkoutResponse } from './dto/workout.response';
 import { User } from '../users/user.entity';
 import { WorkoutType } from './workout-type.enum';
+import { Exercise } from 'src/exercises/exercise.entity';
+import { ClientLink } from 'src/client-links/entities/client-link.entity';
+import { Role } from 'src/users/role.enum';
+import { LinkStatus } from 'src/client-links/entities/link-status.enum';
 
 @Injectable()
 export class WorkoutService {
@@ -15,6 +19,11 @@ export class WorkoutService {
 
         @InjectRepository(User)
         private readonly userRepo: Repository<User>,
+
+        @InjectRepository(ClientLink)
+        private readonly clientLinkRepo: Repository<ClientLink>,
+        @InjectRepository(Exercise)
+        private readonly exerciseRepo: Repository<Exercise>,
     ) {}
 
     async create(input: CreateWorkoutInput, user: User): Promise<WorkoutResponse> {
@@ -25,6 +34,7 @@ export class WorkoutService {
             ...input,
             date: input.date,
             user: { user_id: user.user_id }, 
+            creator: { user_id: user.user_id },
             workout_type: input.workout_type ?? WorkoutType.Training,
         });
 
@@ -94,9 +104,86 @@ export class WorkoutService {
     if (!workout) {
         throw new Error('Nie znaleziono takiego treningu lub nie należy do tego użytkownika');
     }
-
-    await this.workoutRepo.delete(workout.id); 
-    return { success: true };
+        await this.workoutRepo.delete(workout.id); 
+        return { success: true };
     }
+
+    async assignWorkoutToClient(
+        trainer: User,
+        sourceWorkoutId: number,
+        clientId: number,
+        targetDate: Date,
+    ): Promise<WorkoutResponse> {
+
+        if (trainer.role_id !== Role.Trainer) {
+            throw new ForbiddenException('Nie masz uprawnien trenerskich')
+        }
+
+        const link = await this.clientLinkRepo.findOne({
+            where: {
+            trainerId: trainer.user_id,
+            clientId: clientId,
+            status: LinkStatus.Accepted,
+            },
+        });
+        if (!link) {
+            throw new ForbiddenException('Nie jesteś trenerem tego użytkownika')
+        }
+
+        const clientUser = await this.userRepo.findOne({ where: { user_id: clientId } })
+        if (!clientUser) {
+            throw new NotFoundException('Nie znaleziono klienta');
+        }
+
+        const sourceWorkout = await this.workoutRepo.findOne({
+            where: {
+                id: sourceWorkoutId,
+                user: { user_id: trainer.user_id },
+            },
+            relations: ['exercises', 'exercises.template'],
+        });
+        if (!sourceWorkout) {
+            throw new NotFoundException('Nie znaleziono treningu-szablonu należącego do Ciebie');
+        }
+
+        const newWorkout = this.workoutRepo.create({
+            description: sourceWorkout.description,
+            date: targetDate.toISOString().split('T')[0],
+            user: clientUser,
+            creator: trainer,
+            workout_type: sourceWorkout.workout_type,
+        });
+        const savedWorkout = await this.workoutRepo.save(newWorkout);
+
+        const newExercises = sourceWorkout.exercises.map((ex) => {
+            if (!ex.template) {
+                console.warn(`Pominieto cwiczenie ${ex.id} - brak szablonu`);
+                return null;
+            }
+            return this.exerciseRepo.create({
+                template: ex.template,
+                sets: ex.sets,
+                reps: ex.reps,
+                weight: ex.weight,
+                weightUnits: ex.weightUnits,
+                day: targetDate.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase(),
+                workout: savedWorkout,
+            }); 
+        }).filter(ex => ex !== null);
+
+        if(newExercises.length > 0) {
+            await this.exerciseRepo.save(newExercises);
+        }
+
+        return{
+            id: savedWorkout.id,
+            date: savedWorkout.date,
+            description: savedWorkout.description,
+            created_at: savedWorkout.created_at,
+        };
+
+        
+    }
+
 
 }
