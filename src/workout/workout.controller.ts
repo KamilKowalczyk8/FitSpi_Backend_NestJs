@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -16,6 +17,7 @@ import { User } from '../users/user.entity';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { create } from 'domain';
 import { UpdateWorkoutDescriptionDto } from './dto/update-workout-description.dto';
+import { AssignWorkoutDto } from './dto/assign-workout.dto';
 
 @ApiTags('Workouts')
 @ApiBearerAuth()
@@ -25,7 +27,7 @@ export class WorkoutController {
     constructor(private readonly workoutService: WorkoutService) {}
 
     @Post()
-    @ApiOperation({ summary: 'Stwórz nowy trening' })
+    @ApiOperation({ summary: 'Stwórz nowy trening (dla samego siebie)' })
     create(@Body() dto: CreateWorkoutInput, @GetUser() user: User){
         console.log('Zalogowany user:', user);
         return this.workoutService.create(dto, user);
@@ -36,8 +38,6 @@ export class WorkoutController {
     findAll(@GetUser() user: User) {
         return this.workoutService.findAllByUser(user.user_id);
     }
-
-    
 
     @Delete(':id')
     @ApiOperation({ summary: 'Usuń dany trening' })
@@ -55,5 +55,18 @@ export class WorkoutController {
         return this.workoutService.editNameWorkout(id, user.user_id, dto.description);
     }
 
-    
+    @Post(':workoutId/assign')
+    @ApiOperation({ summary: '[TRENER] Przypisz (skopiuj) swój trening do podopiecznego' })
+    assignWorkout(
+        @GetUser() trainer: User,
+        @Param('workoutId', ParseIntPipe) workoutId: number,
+        @Body() dto: AssignWorkoutDto,
+    ) {
+    return this.workoutService.assignWorkoutToClient(
+      trainer,
+      workoutId,
+      dto.clientId,
+      new Date(dto.date),
+    );
+  }
 }

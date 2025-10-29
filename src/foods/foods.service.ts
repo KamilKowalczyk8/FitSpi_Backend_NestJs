@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Product } from 'src/products/entities/product.entity';
 
 @Injectable()
 export class FoodsService {
-  create(createFoodDto: CreateFoodDto) {
-    return 'This action adds a new food';
-  }
+  constructor(
+    @InjectRepository(Food)
+    private readonly foodRepo: Repository<Food>,
+    @InjectRepository(Product)
+    private readonly productRepo: Repository<Product>
+  ) {}
 
-  findAll() {
-    return `This action returns all foods`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} food`;
-  }
-
-  update(id: number, updateFoodDto: UpdateFoodDto) {
-    return `This action updates a #${id} food`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} food`;
+  private calculateMacros(product: Product, grams: number) {
+    const multiplier = grams / 100.0;
+    return {
+      kcal: product.kcal * multiplier,
+      protein: product.protein * multiplier,
+      carbs: product.carbs * multiplier,
+      fats: product.fats * multiplier,
+    };
   }
 }
