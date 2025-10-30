@@ -1,34 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { FoodsService } from './foods.service';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/users/user.entity';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
+@ApiTags('Foods')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('foods')
 export class FoodsController {
   constructor(private readonly foodsService: FoodsService) {}
 
   @Post()
-  create(@Body() createFoodDto: CreateFoodDto) {
-    return this.foodsService.create(createFoodDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.foodsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.foodsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFoodDto: UpdateFoodDto) {
-    return this.foodsService.update(+id, updateFoodDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.foodsService.remove(+id);
+  @ApiOperation({ summary: 'Dodanie nowego wpisu z posiłkami'})
+  @ApiResponse({ status: 201, description: 'Posiłek został dodany'})
+  create(
+    @Body() dto: CreateFoodDto,
+    @GetUser() user: User,
+  ){
+    return this.foodsService.addFood(user, dto);
   }
 }
