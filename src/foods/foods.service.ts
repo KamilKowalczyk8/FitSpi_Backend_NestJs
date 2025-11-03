@@ -93,28 +93,32 @@ export class FoodsService {
     return { message: 'Wpis został usunięty'};
   }
 
-  async copyFood(logId: number, user: User, targetDate: Date): Promise<Food> {
-    const originalEntry = await this.foodRepo.findOne({
-      where: { id: logId, user: { user_id: user.user_id } },
+  async copyDayFood(user: User, sourceDate: Date, targetDate: Date): Promise<Food[]> {
+    const entriesToCopy = await this.foodRepo.find({
+      where: { 
+        user: { user_id: user.user_id },
+        date: sourceDate,
+      },
       relations: ['product'],
     });
 
-    if(!originalEntry) {
-      throw new NotFoundException('Nie znaleziono wpisu do skopiowania')
+    if(entriesToCopy.length === 0) {
+      throw new NotFoundException('Nie znaleziono wpisów do skopiowania')
     }
 
-    const newFoodEntry = this.foodRepo.create({
-      user: user,
-      product: originalEntry.product,
-      meal: originalEntry.meal,
-      grams: originalEntry.grams,
-      kcal: originalEntry.kcal,
-      protein: originalEntry.protein,
-      carbs: originalEntry.carbs,
-      fats: originalEntry.fats,
-      date: targetDate,
+    const newFoodEntry = entriesToCopy.map(entry =>{
+      return this.foodRepo.create({
+        user: user,
+        product: entry.product,
+        meal: entry.meal,
+        grams: entry.grams,
+        kcal: entry.kcal,
+        protein: entry.protein,
+        carbs: entry.carbs,
+        fats: entry.fats,
+        date: targetDate,
+      });
     });
-
     return this.foodRepo.save(newFoodEntry);
   }
 
