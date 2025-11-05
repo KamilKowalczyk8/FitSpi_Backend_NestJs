@@ -2,11 +2,10 @@ import {
   Controller,
   Post,
   Body,
-  Res,
   Get,
   UseGuards,
-  Req,
   HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
@@ -18,6 +17,7 @@ import { User } from '../users/user.entity';
 import { ApiTags, ApiBody, ApiResponse, ApiCookieAuth, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Role } from 'src/users/role.enum';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController{
     constructor(private readonly authService: AuthService){}
@@ -27,9 +27,10 @@ export class AuthController{
 @ApiOperation({ summary: 'Rejestracja nowego użytkownika' })
 @ApiResponse({ status: 201, description: 'Zarejestrowano pomyślnie' })
 @ApiResponse({ status: 400, description: 'Nieprawidłowe dane' })
-async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Response) {
-    const { user, access_token } = await this.authService.register(dto);
-    return { success: true, user, access_token };
+async register(@Body()
+dto: RegisterDto) {
+    const data = await this.authService.register(dto);
+    return { success: true, ...data };
 }
 
 //---------------------------------------------------------------------------------------------------------------------------
@@ -44,9 +45,10 @@ async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Respon
 @ApiOperation({ summary: 'Logowanie użytkownika' })
 @ApiResponse({ status: 200, description: 'Zalogowano pomyślnie' })
 @ApiResponse({ status: 401, description: 'Błędny e-mail lub hasło' })
-async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
-  const { user, access_token } = await this.authService.login(dto);
-  return { success: true, user, access_token };
+async login(@Body()
+dto: LoginDto) {
+  const data = await this.authService.login(dto);
+  return { success: true, ...data };
 }
 
 //---------------------------------------------------------------------------------------------------------------------------
@@ -55,16 +57,9 @@ async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
 
 @Post('logout')
 @ApiOperation({ summary: 'Wylogowano użytkownika' })
-@ApiResponse({
-    status: 200,
-    description: 'Ciasteczko JWT zostało usunięte, wylogowano',
-})
-@ApiResponse({ 
-    status: 500,
-    description: 'Błąd serwera podczas wylogowania użytkownika',
-})
-logout(@Res ({ passthrough: true }) res: Response){
-    res.clearCookie('token');
+@ApiBearerAuth('access-token') 
+@UseGuards(JwtAuthGuard)
+logout(){
     return { success: true, message: 'Wylogowano pomyślnie' };
 }
 

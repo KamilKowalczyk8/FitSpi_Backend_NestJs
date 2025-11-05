@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer/types/decorators/type.decorator";
+import { Type } from 'class-transformer';
 import { IsDate } from "class-validator";
 
 export class GetFoodByDayDto {

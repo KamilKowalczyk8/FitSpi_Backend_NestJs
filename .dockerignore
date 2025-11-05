@@ -1,0 +1,8 @@
+# Ignoruj zależności z Windowsa/Maca
+node_modules
+
+# Ignoruj folder dystrybucyjny
+dist
+
+# Ignoruj logi npm
+npm-debug.log
