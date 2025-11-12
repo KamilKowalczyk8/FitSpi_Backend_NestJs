@@ -9,6 +9,7 @@ import { ExerciseTemplateModule } from './exercises_template/exercise-template.m
 import { FoodsModule } from './foods/foods.module';
 import { ProductsModule } from './products/products.module';
 import { ClientLinksModule } from './client-links/client-links.module';
+import { WorkoutAssignmentsModule } from './workout-assignments/workout-assignments.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ClientLinksModule } from './client-links/client-links.module';
     FoodsModule,
     ProductsModule,
     ClientLinksModule,
+    WorkoutAssignmentsModule,
     
   ],
 })

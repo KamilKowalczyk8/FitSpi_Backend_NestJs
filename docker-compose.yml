@@ -13,12 +13,9 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   backend:
-    build:
-      context: .
-      target: builder 
+    build: . 
     container_name: backendNest
     restart: unless-stopped
-    command: npm run start:dev 
     depends_on:
       - postgres
     environment:
@@ -41,6 +38,7 @@ services:
     volumes:
       - .:/app 
       - /app/node_modules
+      - /app/dist
 
   prometheus:
     image: prom/prometheus

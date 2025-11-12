@@ -1,4 +1,3 @@
-// src/exercises/dto/update-exercise.input.ts
 import { IsEnum, IsNumber, IsOptional, IsPositive } from 'class-validator';
 import { WeightUnits } from '../weight_units.enum';
 import { ApiPropertyOptional } from '@nestjs/swagger';

@@ -8,6 +8,7 @@ import {
   Patch,
   Param,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
@@ -53,5 +54,14 @@ export class ClientLinkController {
   @ApiOperation({ summary: '[TRENER] Pobierz listę swoich podpoiecznych (zaakceptowanych)'})
   getMyClients(@GetUser() trainer: User) {
     return this.linkService.getMyClients(trainer);
+  }
+
+  @Delete('my-clients/:clientId')
+  @ApiOperation({ summary: '[TRENER] Usuwa powiązanie ze swoim podopiecznym' })
+  deleteClient(
+    @GetUser() trainer: User,
+    @Param('clientId', ParseIntPipe) clientId: number,
+  ) {
+    return this.linkService.deleteClient(trainer, clientId);
   }
 }
