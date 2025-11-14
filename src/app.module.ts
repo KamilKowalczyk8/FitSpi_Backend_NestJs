@@ -33,7 +33,7 @@ import { WorkoutAssignmentsModule } from './workout-assignments/workout-assignme
     ProductsModule,
     ClientLinksModule,
     WorkoutAssignmentsModule,
-    
+  
   ],
 })
 export class AppModule {}
