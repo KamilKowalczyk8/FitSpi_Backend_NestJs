@@ -7,7 +7,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/users/role.enum';
-import { AssignWorkoutDto } from './dto/assign-workout.dto';
+import { AssignWorkoutAssignmentsDto } from './dto/assign-workout-assignments.dto';
 import { RespondAssignmentDto } from './dto/respond-assignment.dto';
 
 @ApiTags('Workout Assignments')
@@ -20,9 +20,9 @@ export class WorkoutAssignmentsController {
   @Post()
   @Roles(Role.Trainer,Role.Admin)
   @ApiOperation({ summary: 'Przypisz trening do podopiecznego (tylko trener)' })
-  @ApiBody({ type: AssignWorkoutDto })
+  @ApiBody({ type: AssignWorkoutAssignmentsDto })
   @ApiResponse({ status: 201, description: 'Trening został przypisany '})
-  assignWorkout(@Req() req, @Body() dto: AssignWorkoutDto) {
+  assignWorkout(@Req() req, @Body() dto: AssignWorkoutAssignmentsDto) {
     return this.workoutAssignmentsService.assignWorkout(req.user.user_id, dto);
   }
 

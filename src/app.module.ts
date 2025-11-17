@@ -23,6 +23,8 @@ import { WorkoutAssignmentsModule } from './workout-assignments/workout-assignme
       database: process.env.DB_NAME,
       synchronize: true,
       autoLoadEntities: true,
+      logging: ['query', 'error'],
+      logger: 'advanced-console',
     }),
     PrometheusModule.register(),
     AuthModule,

@@ -8,6 +8,7 @@ import {
   Patch,
   Delete,
   ParseIntPipe,
+  Req,
 } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -68,5 +69,18 @@ export class WorkoutController {
       dto.clientId,
       new Date(dto.date),
     );
-  }
+    }
+
+
+    @Get('client/:clientId/from-trainer')
+    @ApiOperation({ summary: 'Treningi które zostały stworzone przez trenera dla danego podopiecznego' })
+    getClientWorkoutsFromTrainer(
+        @Param('clientId', ParseIntPipe) clientId: number,
+        @GetUser() trainer: User,
+    ) {
+        return this.workoutService.getWorkoutsCreatedForClient(
+            trainer.user_id,
+            clientId,
+        );
+    }
 }

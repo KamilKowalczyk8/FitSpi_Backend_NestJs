@@ -6,7 +6,7 @@ import { Workout } from 'src/workout/workout.entity';
 import { WorkoutAssignment, WorkoutAssignmentStatus } from './entities/workout-assignment.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AssignWorkoutDto } from './dto/assign-workout.dto';
+import { AssignWorkoutAssignmentsDto } from './dto/assign-workout-assignments.dto';
 import { RespondAssignmentDto } from './dto/respond-assignment.dto';
 
 
@@ -24,7 +24,7 @@ export class WorkoutAssignmentsService {
     private userRepo: Repository<User>,
   ) {}
 
-  async assignWorkout(trainerId: number, dto: AssignWorkoutDto) {
+  async assignWorkout(trainerId: number, dto: AssignWorkoutAssignmentsDto) {
     const { workoutId, traineeId, assignedForDate } = dto;
 
     const workout = await this.workoutRepo.findOne({ where: { id: workoutId } });

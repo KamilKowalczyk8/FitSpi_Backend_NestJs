@@ -32,6 +32,7 @@ export class Workout{
     //Pole user.workouts musi istnieć po stronie User (tablica treningów)
     //onDelete: 'CASCADE' — usunięcie użytkownika usuwa wszystkie jego treningi
     @ManyToOne(() => User, (user) => user.workouts, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'user_id' })
     user: User;
 
     @Column({ nullable: true })
@@ -45,7 +46,7 @@ export class Workout{
     //Zakłada, że w encji Exercise istnieje pole workout: Workout
     //cascade: true – oznacza, że zapisując trening z nowymi 
     // ćwiczeniami, TypeORM zapisze też te ćwiczenia automatycznie
-    @OneToMany(() => Exercise, (exercise) => exercise.workoutId, { cascade: true })
+    @OneToMany(() => Exercise, (exercise) => exercise.workout, { cascade: true })
     exercises: Exercise[];
 
     @Column({

@@ -1,8 +1,8 @@
-# Ignoruj zależności z Windowsa/Maca
+# Ignoruj lokalne zależności, aby nie kopiować ich do obrazu
 node_modules
 
-# Ignoruj folder dystrybucyjny
+# Ignoruj lokalny folder builda (jeśli istnieje)
 dist
 
-# Ignoruj logi npm
+# Ignoruj logi
 npm-debug.log

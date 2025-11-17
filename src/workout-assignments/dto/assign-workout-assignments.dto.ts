@@ -1,6 +1,6 @@
 import { IsNumber, IsOptional, IsDateString } from 'class-validator';
 
-export class AssignWorkoutDto {
+export class AssignWorkoutAssignmentsDto {
   @IsNumber()
   workoutId: number;
 

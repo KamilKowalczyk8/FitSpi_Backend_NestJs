@@ -153,8 +153,10 @@ export class WorkoutService {
             creator: trainer,
             workout_type: sourceWorkout.workout_type,
         });
+        console.log('Tworzę trening:', newWorkout);
         const savedWorkout = await this.workoutRepo.save(newWorkout);
-
+        
+        console.log('Zapisany trening:', savedWorkout);
         const newExercises = sourceWorkout.exercises.map((ex) => {
             if (!ex.template) {
                 console.warn(`Pominieto cwiczenie ${ex.id} - brak szablonu`);
@@ -181,8 +183,17 @@ export class WorkoutService {
             description: savedWorkout.description,
             created_at: savedWorkout.created_at,
         };
+    }
 
-        
+    async getWorkoutsCreatedForClient(trainerId: number, clientId: number) {
+        return this.workoutRepo.find({
+            where: {
+                user: { user_id: clientId },
+                creator: { user_id: trainerId }
+            },
+            order: { date: 'DESC' },
+            relations: [ 'exercises' ],
+        });
     }
 
 

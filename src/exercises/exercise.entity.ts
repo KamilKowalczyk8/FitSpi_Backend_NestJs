@@ -33,6 +33,4 @@ export class Exercise {
   @JoinColumn({ name: 'workoutId' })
   workout: Workout;
 
-  @Column()
-  workoutId: number;
 }
