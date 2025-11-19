@@ -10,6 +10,7 @@ import { Exercise } from 'src/exercises/exercise.entity';
 import { ClientLink } from 'src/client-links/entities/client-link.entity';
 import { Role } from 'src/users/role.enum';
 import { LinkStatus } from 'src/client-links/entities/link-status.enum';
+import { WorkoutStatus } from './workout-status.enum';
 
 @Injectable()
 export class WorkoutService {
@@ -47,6 +48,7 @@ export class WorkoutService {
             date: saved.date,
             description: saved.description,
             created_at: saved.created_at,
+            status: saved.status
         };
     }
 
@@ -73,6 +75,8 @@ export class WorkoutService {
             date: updated.date,
             description: updated.description,
             created_at: updated.created_at,
+            status: updated.status
+
         }
     }
 
@@ -92,6 +96,8 @@ export class WorkoutService {
             date: wo.date,
             description: wo.description,
             created_at: wo.created_at,
+            status: wo.status
+
         }));
     }
 
@@ -182,6 +188,7 @@ export class WorkoutService {
             date: savedWorkout.date,
             description: savedWorkout.description,
             created_at: savedWorkout.created_at,
+            status: savedWorkout.status
         };
     }
 
@@ -195,6 +202,89 @@ export class WorkoutService {
             relations: [ 'exercises' ],
         });
     }
+
+    async createProposalForClient(
+        input:CreateWorkoutInput,
+        clientId: number,
+        trainerId: number
+    ): Promise<WorkoutResponse> {
+        const client = await this.userRepo.findOne({ where: { user_id: clientId } });
+            if(!client) throw new NotFoundException('Nie znaleziono klienta');
+
+        const workout = this.workoutRepo.create({
+            ...input,
+            date: input.date ? new Date(input.date).toISOString() : new Date().toISOString(),            
+            user: client,
+            creator: { user_id: trainerId },
+            status: WorkoutStatus.PENDING
+        });
+
+        const saved = await this.workoutRepo.save(workout);
+
+        return {
+            id: saved.id,
+            date: saved.date,
+            description: saved.description || '', 
+            created_at: saved.created_at,         
+            status: saved.status
+        };
+    }
+
+
+    async findAllByUserStatus(
+        user_id: number,
+         status?: WorkoutStatus
+    ): Promise<WorkoutResponse[]> {
+        const whereCondition: any = { user: { user_id: user_id } };
+        if(status) whereCondition.status = status;
+
+        const workouts = await this.workoutRepo.find({
+            where: whereCondition,
+            order: {
+                date: 'DESC',
+                created_at: 'DESC',
+                description: 'DESC'
+            },
+        });
+
+        return workouts.map((workout) => ({
+            id: workout.id,
+            date: workout.date,
+            description: workout.description || '', 
+            created_at: workout.created_at,
+            status: workout.status
+        }));
+    }
+
+    async acceptWorkout(
+        workoutId: number,
+        clientId: number,
+        targetDate: Date
+    ): Promise<WorkoutResponse> {
+      
+      const workout = await this.workoutRepo.findOne({
+          where: { 
+              id: workoutId, 
+              user: { user_id: clientId } 
+          },
+      });
+      if (!workout) {
+          throw new NotFoundException('Nie znaleziono treningu lub nie masz do niego praw.');
+      }
+
+      workout.status = WorkoutStatus.ACCEPTED;
+      workout.date = targetDate.toISOString();
+      const updated = await this.workoutRepo.save(workout);
+
+      return {
+          id: updated.id,
+          date: updated.date,
+          description: updated.description || '',
+          created_at: updated.created_at,
+          status: updated.status,
+      };
+  }
+
 
 
 }

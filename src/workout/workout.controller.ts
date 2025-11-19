@@ -9,16 +9,18 @@ import {
   Delete,
   ParseIntPipe,
   Req,
+  Query,
 } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateWorkoutInput } from './dto/create-workout.input';
 import { GetUser } from '../common/decorators/get-user.decorator';
 import { User } from '../users/user.entity';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { create } from 'domain';
 import { UpdateWorkoutDescriptionDto } from './dto/update-workout-description.dto';
 import { AssignWorkoutDto } from './dto/assign-workout.dto';
+import { WorkoutStatus } from './workout-status.enum';
 
 @ApiTags('Workouts')
 @ApiBearerAuth()
@@ -83,4 +85,35 @@ export class WorkoutController {
             clientId,
         );
     }
+
+    @Get('wStatus')
+    @ApiOperation({ summary: 'Pobierz treningi użytkownika (opcjonalnie filtruj po statusie)' })
+    @ApiQuery({ name: 'status', enum: WorkoutStatus, required: false })
+    findAllstatus(
+        @GetUser() user: User,
+        @Query('status') status?: WorkoutStatus
+    ) {
+        return this.workoutService.findAllByUserStatus(user.user_id, status);
+    }
+
+    @Post('user/:clientId')
+    @ApiOperation({ summary: '[TRENER] Wyślij propozycję treningu do podopiecznego' })
+    createForClient(
+        @Param('clientId', ParseIntPipe) clientId: number,
+        @Body() dto: CreateWorkoutInput,
+        @GetUser() trainer: User,
+    ) {
+        return this.workoutService.createProposalForClient(dto, clientId, trainer.user_id)
+    }
+
+    @Patch(':id/accept')
+    @ApiOperation({ summary: '[KLIENT] Zaakceptuj trening i ustaw datę' })
+    acceptProposal(
+      @Param('id', ParseIntPipe) workoutId: number,
+      @Body('date') dateString: string, 
+      @GetUser() user: User
+  ) {
+      const date = new Date(dateString);
+      return this.workoutService.acceptWorkout(workoutId, user.user_id, date);
+  }
 }

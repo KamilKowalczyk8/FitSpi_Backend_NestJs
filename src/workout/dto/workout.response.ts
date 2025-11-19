@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { WorkoutStatus } from '../workout-status.enum';
 
 export class WorkoutResponse {
   @ApiProperty()
@@ -12,4 +13,7 @@ export class WorkoutResponse {
 
   @ApiProperty()
   created_at: Date;
+
+  @ApiProperty({ enum: WorkoutStatus })
+  status: WorkoutStatus;
 }

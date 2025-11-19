@@ -12,6 +12,7 @@ import { User } from 'src/users/user.entity';
 import { Exercise } from 'src/exercises/exercise.entity';
 import { WorkoutType } from './workout-type.enum';
 import { WorkoutAssignment } from 'src/workout-assignments/entities/workout-assignment.entity';
+import { WorkoutStatus } from './workout-status.enum';
 
 @Entity('workout')
 export class Workout{
@@ -59,4 +60,11 @@ export class Workout{
     @OneToMany(() => WorkoutAssignment, (assignment) => assignment.workout, { cascade: true })
     assignments: WorkoutAssignment[];
 
+
+    @Column({
+        type: 'enum',
+        enum: WorkoutStatus,
+        default: WorkoutStatus.ACCEPTED
+    })
+    status: WorkoutStatus;
 }
