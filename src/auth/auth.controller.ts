@@ -53,15 +53,18 @@ dto: LoginDto) {
 
 //---------------------------------------------------------------------------------------------------------------------------
 
-//wylogowanie uzytkownika usuwa ciasteczko i zwraca od 200
 
 @Post('logout')
-@ApiOperation({ summary: 'Wylogowano użytkownika' })
-@ApiBearerAuth('access-token') 
-@UseGuards(JwtAuthGuard)
-logout(){
-    return { success: true, message: 'Wylogowano pomyślnie' };
-}
+  @ApiOperation({ summary: 'Wylogowano użytkownika' })
+  @ApiBearerAuth('access-token') 
+  @UseGuards(JwtAuthGuard)
+  logout(@GetUser() user: User) { 
+      
+      console.log(`❌ Użytkownik wylogowany: ${user.email} (ID: ${user.user_id})`);
+      console.log(`🕒 Czas: ${new Date().toISOString()}`);
+      
+      return { success: true, message: 'Wylogowano pomyślnie' };
+  }
 
 //---------------------------------------------------------------------------------------------------------------------------
 
@@ -69,9 +72,9 @@ logout(){
 // ✔ @UseGuards(JwtAuthGuard) → wymaga JWT, aby się zalogować. 
 // ✔ Dekorator @GetUser() → pobiera dane użytkownika bezpośrednio z tokena.
 @Get('currentUser')
-@UseGuards(JwtAuthGuard) //JwtAuthGuard, który sprawdza, czy użytkownik jest zalogowany
+@UseGuards(JwtAuthGuard) 
 @ApiOperation({ summary: 'Pobierz dane zalogowanego użytkownika' })
-@ApiBearerAuth('access-token') // wymaga jwt do autoryzacji
+@ApiBearerAuth('access-token') 
 @ApiResponse({
     status:200,
     description: 'Zwraca dane zalogowanego użytkownika',

@@ -80,35 +80,50 @@ export class WorkoutService {
         }
     }
 
-    //Pobiera wszystkie treningi użytkownika na podstawie jego userId
-    async findAllByUser(user_id: number): Promise<WorkoutResponse[]> {
+    async findAllByUser(
+        user_id: number,
+        status?: WorkoutStatus 
+    ): Promise<WorkoutResponse[]> {
+        const whereCondition: any = { user: { user_id: user_id } };
+    
+        if (status) {
+            whereCondition.status = status;
+        } else {
+            whereCondition.status = WorkoutStatus.ACCEPTED;
+        }
+
         const workouts = await this.workoutRepo.find({
-            //Szukamy treningów należących do konkretnego użytkownika.
-            //Sortujemy je malejąco po dacie utworzenia (najnowsze pierwsze).
-            where: { user: { user_id: user_id } },
-            order: { created_at: 'DESC' },
+            where: whereCondition,
+            order: {
+                date: 'DESC',      
+                created_at: 'DESC' 
+            },
         });
 
-        //Każdy trening mapujemy do obiektu WorkoutResponse, 
-        //żeby zwrócić tylko potrzebne dane.
-        return workouts.map((wo) => ({
-            id: wo.id,
-            date: wo.date,
-            description: wo.description,
-            created_at: wo.created_at,
-            status: wo.status
-
+        return workouts.map((workout) => ({
+            id: workout.id,
+            date: workout.date,
+            description: workout.description || '', 
+            created_at: workout.created_at,
+            status: workout.status
         }));
     }
 
 
     async deleteWorkout(workoutId: number, userId: number): Promise<{ success: boolean }> {
     const workout = await this.workoutRepo.findOne({
-        where: { id: workoutId, user: { user_id: userId } },
+        where: { id: workoutId },
+        relations: ['user'],
     });
 
     if (!workout) {
-        throw new Error('Nie znaleziono takiego treningu lub nie należy do tego użytkownika');
+        throw new NotFoundException('Nie znaleziono treningu');
+    }
+    const isOwner = workout.user.user_id === userId;
+    const isCreator = workout.creatorId === userId;
+
+    if (!isOwner && !isCreator) {
+        throw new ForbiddenException('Nie masz uprawnień do usunięcia tego treningu');
     }
         await this.workoutRepo.delete(workout.id); 
         return { success: true };
@@ -174,7 +189,6 @@ export class WorkoutService {
                 reps: ex.reps,
                 weight: ex.weight,
                 weightUnits: ex.weightUnits,
-                day: targetDate.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase(),
                 workout: savedWorkout,
             }); 
         }).filter(ex => ex !== null);
@@ -216,11 +230,10 @@ export class WorkoutService {
             date: input.date ? new Date(input.date).toISOString() : new Date().toISOString(),            
             user: client,
             creator: { user_id: trainerId },
-            status: WorkoutStatus.PENDING
+            status: WorkoutStatus.DRAFT
         });
 
         const saved = await this.workoutRepo.save(workout);
-
         return {
             id: saved.id,
             date: saved.date,
@@ -230,61 +243,117 @@ export class WorkoutService {
         };
     }
 
-
-    async findAllByUserStatus(
-        user_id: number,
-         status?: WorkoutStatus
-    ): Promise<WorkoutResponse[]> {
-        const whereCondition: any = { user: { user_id: user_id } };
-        if(status) whereCondition.status = status;
-
-        const workouts = await this.workoutRepo.find({
-            where: whereCondition,
-            order: {
-                date: 'DESC',
-                created_at: 'DESC',
-                description: 'DESC'
-            },
+    async sendWorkoutToClient(workoutId: number, trainerId: number): Promise<WorkoutResponse> {
+        const workout = await this.workoutRepo.findOne({
+            where: { id: workoutId, creatorId: trainerId }, 
         });
 
-        return workouts.map((workout) => ({
-            id: workout.id,
-            date: workout.date,
-            description: workout.description || '', 
-            created_at: workout.created_at,
-            status: workout.status
-        }));
+        if (!workout) throw new NotFoundException('Nie znaleziono treningu');
+        workout.status = WorkoutStatus.PENDING; 
+        const saved = await this.workoutRepo.save(workout);
+        return {
+            id: saved.id,
+            date: saved.date,
+            description: saved.description || '',
+            created_at: saved.created_at,
+            status: saved.status
+        };
     }
 
     async acceptWorkout(
         workoutId: number,
         clientId: number,
         targetDate: Date
-    ): Promise<WorkoutResponse> {
-      
-      const workout = await this.workoutRepo.findOne({
-          where: { 
-              id: workoutId, 
-              user: { user_id: clientId } 
-          },
+    ): Promise<WorkoutResponse> {     
+      const originalWorkout = await this.workoutRepo.findOne({
+        where: {
+            id: workoutId,
+            user: { user_id: clientId },
+        },
+        relations: ['exercises', 'exercises.template'],
       });
-      if (!workout) {
-          throw new NotFoundException('Nie znaleziono treningu lub nie masz do niego praw.');
+
+      if (!originalWorkout) {
+        throw new NotFoundException(
+            'Nie znalezniono treningu lub nie masz do niego uprawnien',
+        );
       }
 
-      workout.status = WorkoutStatus.ACCEPTED;
-      workout.date = targetDate.toISOString();
-      const updated = await this.workoutRepo.save(workout);
+      const newWorkout = this.workoutRepo.create({
+        description: originalWorkout.description,
+        workout_type: originalWorkout.workout_type,
+        date: targetDate.toISOString().split('T')[0],
+        status: WorkoutStatus.ACCEPTED,
+        user: { user_id: clientId } as User,
+        creator: originalWorkout.creator,
+        creatorId: originalWorkout.creatorId,
+      });
+
+      const savedNewWorkout = await this.workoutRepo.save(newWorkout);
+
+      if (originalWorkout.exercises && originalWorkout.exercises.length > 0) {
+      const newExercises = originalWorkout.exercises
+        .map((ex) => {
+          if (!ex.template) return null;
+          return this.exerciseRepo.create({
+            sets: ex.sets,
+            reps: ex.reps,
+            weight: ex.weight,
+            weightUnits: ex.weightUnits,
+            workout: savedNewWorkout, 
+            template: ex.template,
+          });
+        })
+        .filter((ex) => ex !== null);
+
+       if (newExercises.length > 0) {
+         await this.exerciseRepo.save(newExercises);
+       }
+      }
+      originalWorkout.status = WorkoutStatus.DOWNLOADED;
+
+      await this.workoutRepo.save(originalWorkout);
+
+      console.log(
+      `Zaakceptowano trening. Oryginał (ID: ${workoutId}) oznaczony jako POBRANY. Nowa kopia ma ID: ${savedNewWorkout.id}`,
+      );
 
       return {
-          id: updated.id,
-          date: updated.date,
-          description: updated.description || '',
-          created_at: updated.created_at,
-          status: updated.status,
+        id: savedNewWorkout.id,
+        date: savedNewWorkout.date,
+        description: savedNewWorkout.description || '',
+        created_at: savedNewWorkout.created_at,
+        status: savedNewWorkout.status,
       };
-  }
+    }
 
+    async rejectWorkout(
+        workoutId: number,
+        clientId: number,
+    ): Promise<WorkoutResponse> {
+        const workout = await this.workoutRepo.findOne({
+            where: {
+                id: workoutId,
+                user: { user_id: clientId },
+            }, 
+        });
 
+        if (!workout) {
+            throw new NotFoundException(
+                'Nie znaleziono treningu lub nie masz do niego praw.',
+            );
+        }
 
+        workout.status = WorkoutStatus.REJECTED;
+        const updatedWorkout = await this.workoutRepo.save(workout);
+
+        return {
+            id: updatedWorkout.id,
+            date: updatedWorkout.date,
+            description: updatedWorkout.description || '',
+            created_at: updatedWorkout.created_at,
+            status: updatedWorkout.status,
+        };
+    }
+     
 }

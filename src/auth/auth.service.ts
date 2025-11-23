@@ -88,35 +88,37 @@ async register(@Body() dto: RegisterDto){
     await this.userRepo.save(user);
 
     //generowanie tokena jwt
-    const token = this.generateToken(user);
+    const token = this.generateToken(user, '24h');
   return { user: this.safeUser(user), access_token: token };
 }
 
   async login(@Body() dto: LoginDto) {
     const email = dto.email.trim().toLowerCase();
 
-console.log('🔍 Email z żądania:', email);
+        console.log('🔍 Email z żądania:', email);
 
     const user = await this.userRepo.findOne({ where: { email }});
     if (!user || !user.is_active){
         throw new UnauthorizedException('Nieprawidłowe dane logowania');
     }
-    console.log('📌 Wprowadzane hasło:', dto.password);
-    console.log('📌 Hash z bazy:', user.password);
-    console.log('👤 Użytkownik z bazy:', user);
+        console.log('📌 Wprowadzane hasło:', dto.password);
+        console.log('📌 Hash z bazy:', user.password);
+        console.log('👤 Użytkownik z bazy:', user);
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) {
         throw new UnauthorizedException('Nieprawidłowe dane logowania');
     }
 
- console.log('🔐 Czy hasło pasuje:', isMatch);
-      const token = this.generateToken(user);
-  return { user: this.safeUser(user), access_token: token };
+        console.log('🔐 Czy hasło pasuje:', isMatch);
 
+    const expiresIn = dto.rememberMe ? '30d' : '1h';
+
+    const token = this.generateToken(user, expiresIn);
+    return { user: this.safeUser(user), access_token: token };
   }
 
 
- public generateToken(user: User): string {
+ public generateToken(user: User, expiresIn: string): string {
     const payload: JwtPayload = {
         sub: user.user_id,
         email: user.email,
@@ -124,12 +126,12 @@ console.log('🔍 Email z żądania:', email);
     };
 
     const token = this.jwtService.sign(payload, {
-        expiresIn: '24h',
+        expiresIn: expiresIn,
         issuer: 'FitSpi',
         audience: 'your-app-client',
     });
 
-    console.log('✅ Token wygenerowany:', token);
+    console.log(`✅ Token wygenerowany (Ważność: ${expiresIn}):`, token);
 
     return token;
 }

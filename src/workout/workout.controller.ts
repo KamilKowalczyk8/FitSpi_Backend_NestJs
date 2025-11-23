@@ -37,9 +37,13 @@ export class WorkoutController {
     }
 
     @Get()
-    @ApiOperation({ summary: 'Pobierz wszystkie treningi użytkownika' })
-    findAll(@GetUser() user: User) {
-        return this.workoutService.findAllByUser(user.user_id);
+    @ApiOperation({ summary: 'Pobierz treningi (domyślnie tylko zaakceptowane, chyba że podasz status)' })
+    @ApiQuery({ name: 'status', enum: WorkoutStatus, required: false }) 
+    findAll(
+        @GetUser() user: User,
+        @Query('status') status?: WorkoutStatus 
+    ) {
+        return this.workoutService.findAllByUser(user.user_id, status);
     }
 
     @Delete(':id')
@@ -86,15 +90,6 @@ export class WorkoutController {
         );
     }
 
-    @Get('wStatus')
-    @ApiOperation({ summary: 'Pobierz treningi użytkownika (opcjonalnie filtruj po statusie)' })
-    @ApiQuery({ name: 'status', enum: WorkoutStatus, required: false })
-    findAllstatus(
-        @GetUser() user: User,
-        @Query('status') status?: WorkoutStatus
-    ) {
-        return this.workoutService.findAllByUserStatus(user.user_id, status);
-    }
 
     @Post('user/:clientId')
     @ApiOperation({ summary: '[TRENER] Wyślij propozycję treningu do podopiecznego' })
@@ -105,6 +100,16 @@ export class WorkoutController {
     ) {
         return this.workoutService.createProposalForClient(dto, clientId, trainer.user_id)
     }
+    @Patch(':id/send')
+    @ApiOperation({ summary: '[TRENER] Wyślij szkic treningu do podopiecznego (Draft -> Pending)' })
+    sendToClient(
+        @Param('id', ParseIntPipe) workoutId: number,
+        @GetUser() trainer: User,
+    ) {
+        return this.workoutService.sendWorkoutToClient(workoutId, trainer.user_id);
+    }
+
+
 
     @Patch(':id/accept')
     @ApiOperation({ summary: '[KLIENT] Zaakceptuj trening i ustaw datę' })
@@ -112,8 +117,16 @@ export class WorkoutController {
       @Param('id', ParseIntPipe) workoutId: number,
       @Body('date') dateString: string, 
       @GetUser() user: User
-  ) {
+    ) {
       const date = new Date(dateString);
       return this.workoutService.acceptWorkout(workoutId, user.user_id, date);
-  }
+    }
+    @Patch(':id/reject')
+    @ApiOperation({ summary: '[KLIENT] Odrzuć propozycję treningu' })
+    rejectProposal(
+        @Param('id', ParseIntPipe) workoutId: number,
+        @GetUser() user: User,
+    ) {
+        return this.workoutService.rejectWorkout(workoutId, user.user_id);
+    }
 }

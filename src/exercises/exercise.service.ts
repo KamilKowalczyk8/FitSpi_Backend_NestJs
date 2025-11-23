@@ -31,9 +31,18 @@ export class ExerciseService {
       relations: ['user'],
     });
 
-    if (!workout || workout.user.user_id !== user.user_id) {
+    if (!workout) {
       throw new NotFoundException(
-        'Nie znaleziono treningu przypisanego do użytkownika',
+        'Nie znaleziono treningu',
+      );
+    }
+
+    const isOwner = workout.user.user_id === user.user_id;
+    const isCreator = workout.creatorId === user.user_id;
+
+    if (!isOwner && !isCreator) {
+      throw new NotFoundException(
+        'Nie masz uprawnień do edycji tego treningu (nie jesteś właścicielem ani twórcą)',
       );
     }
 
@@ -51,7 +60,6 @@ export class ExerciseService {
       reps: dto.reps,
       weight: dto.weight,
       weightUnits: dto.weightUnits,
-      day: dto.day,
       workout: workout,
     });
 
@@ -65,7 +73,6 @@ export class ExerciseService {
       reps: saved.reps,
       weight: saved.weight,
       weightUnits: saved.weightUnits,
-      day: saved.day,
       workoutId: saved.workout.id,
     };
   }
@@ -77,7 +84,7 @@ export class ExerciseService {
       .leftJoinAndSelect('exercise.workout', 'workout')
       .leftJoin('workout.user', 'user')
       .where('user.user_id = :user_id', { user_id })
-      .orderBy('exercise.day', 'ASC')
+      .orderBy('exercise.id', 'ASC')
       .getMany();
     
     return exercises.map((ex) => {
@@ -90,7 +97,6 @@ export class ExerciseService {
         reps: ex.reps,
         weight: ex.weight,
         weightUnits: ex.weightUnits,
-        day: ex.day,
         workoutId: ex.workout.id,
       };
 
@@ -133,7 +139,6 @@ export class ExerciseService {
       reps: saved.reps,
       weight: saved.weight,
       weightUnits: saved.weightUnits,
-      day: saved.day,
       workoutId: saved.workout.id,
     };
   }

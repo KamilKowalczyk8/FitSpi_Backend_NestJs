@@ -21,10 +21,6 @@ export class CreateExerciseInput {
   @IsEnum(WeightUnits)
   weightUnits: WeightUnits;
 
-  @IsString()
-  @IsNotEmpty()
-  day: string; 
-
   @ApiProperty({ example: 2 })
   @IsInt()
   workoutId: number;

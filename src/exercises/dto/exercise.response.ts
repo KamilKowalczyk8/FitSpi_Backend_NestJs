@@ -8,6 +8,5 @@ export class ExerciseResponse {
   reps: number;
   weight: number;
   weightUnits: WeightUnits;
-  day: string;
   workoutId: number;
 }

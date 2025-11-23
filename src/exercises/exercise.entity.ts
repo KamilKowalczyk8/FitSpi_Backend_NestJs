@@ -26,9 +26,6 @@ export class Exercise {
   })
   weightUnits: WeightUnits;
 
-  @Column()
-  day: string;
-
   @ManyToOne(() => Workout, (workout) => workout.exercises, { onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: 'workoutId' })
   workout: Workout;

@@ -12,7 +12,7 @@ import { User } from 'src/users/user.entity';
 import { LinkStatus } from './link-status.enum';
 
 @Entity('client_links')
-@Unique(['trainerId', 'clientId']) // Zapobiega duplikatom relacji
+@Unique(['trainerId', 'clientId']) 
 export class ClientLink {
   @PrimaryGeneratedColumn()
   id: number;
