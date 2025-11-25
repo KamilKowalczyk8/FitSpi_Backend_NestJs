@@ -10,10 +10,18 @@ import { FoodsModule } from './foods/foods.module';
 import { ProductsModule } from './products/products.module';
 import { ClientLinksModule } from './client-links/client-links.module';
 import { WorkoutAssignmentsModule } from './workout-assignments/workout-assignments.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 60,
+    }]),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -37,5 +45,13 @@ import { WorkoutAssignmentsModule } from './workout-assignments/workout-assignme
     WorkoutAssignmentsModule,
   
   ],
+
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
+
 })
 export class AppModule {}

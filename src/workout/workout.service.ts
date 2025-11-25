@@ -55,19 +55,43 @@ export class WorkoutService {
 
     async editNameWorkout(
         workoutId: number,
-        userId: number,
+        requestingUserId: number,
         newNameWorkout: string,
     ): Promise<WorkoutResponse>{
         const workout = await this.workoutRepo.findOne({
-            where: { id: workoutId, user: { user_id: userId } },
+            where: { id: workoutId },
+             relations: [ 'user' ] ,
         });
 
-        if (!workout){
-            throw new Error('Nie znaleziono takiego treningu')
+        if (!workout) {
+        throw new NotFoundException('Nie znaleziono takiego treningu');
         }
 
-        workout.description = newNameWorkout;
+        const ownerId = workout.user.user_id;
 
+        const isOwner = ownerId === requestingUserId;
+        let isTrainer = false;
+
+        if(!isOwner) {
+            const relationship = await this.clientLinkRepo.findOne({
+                where: {
+                    trainer: { user_id: requestingUserId },
+                    client: { user_id: ownerId },
+                    status: LinkStatus.Accepted
+                }
+            });
+            if (relationship) {
+                isTrainer = true;
+            }
+        }
+
+        if (!isOwner && !isTrainer) {
+            throw new ForbiddenException('Brak uprawnien do edycji');
+        }
+
+
+
+        workout.description = newNameWorkout;
         const updated = await this.workoutRepo.save(workout);
 
         return {

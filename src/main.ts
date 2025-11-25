@@ -4,11 +4,14 @@ import * as cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(helmet());
 
   //globalny prefix dal endpointów np api/users 
   app.setGlobalPrefix('api');
@@ -17,7 +20,7 @@ async function bootstrap() {
   app.enableCors({
   origin: process.env.CORS_ORIGIN,
   credentials: true,
-  methods: ['GET','POST','PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET','POST','PUT','PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 });
 
