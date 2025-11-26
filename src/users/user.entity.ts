@@ -7,6 +7,7 @@ import {
   BeforeInsert,
   BeforeUpdate,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { Exercise } from 'src/exercises/exercise.entity';
 import * as bcrypt from 'bcryptjs';
@@ -14,6 +15,8 @@ import { Role } from './role.enum';
 import { Workout } from 'src/workout/workout.entity';
 import { ClientLink } from 'src/client-links/entities/client-link.entity';
 import { Food } from 'src/foods/entities/food.entity';
+import { DailyLog } from 'src/daily-log/entities/daily-log.entity';
+import { UserProfile } from 'src/user-profile/entities/user-profile.entity';
 
 @Entity('users')
 export class User {
@@ -69,12 +72,11 @@ export class User {
         return userData;
     }
 
+    @OneToOne(() => UserProfile, (profile) => profile.user, { cascade: true })
+    profile: UserProfile;
 
     @OneToMany(() => Workout, (workout) => workout.user)
     workouts: Workout[];
-
-    @OneToMany(() => Food, (food) => food.user)
-    foodLogs: Food[];
 
     @OneToMany(() => ClientLink, (link) => link.trainer)
     clientsAsTrainer: ClientLink[];
@@ -82,4 +84,6 @@ export class User {
     @OneToMany(() => ClientLink, (link) => link.client)
     linksAsClient: ClientLink[];
 
+    @OneToMany(() => DailyLog, (dailyLog) => dailyLog.user)
+    dailyLogs: DailyLog[];
 }

@@ -37,7 +37,7 @@ export class Workout{
     user: User;
 
     @Column({ nullable: true })
-    creatorId: number; // Kto stworzył ten trening
+    creatorId: number; 
 
     @ManyToOne(() => User, { nullable: true })
     @JoinColumn({ name: 'creatorId' })

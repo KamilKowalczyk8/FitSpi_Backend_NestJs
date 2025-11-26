@@ -12,6 +12,8 @@ import { ClientLinksModule } from './client-links/client-links.module';
 import { WorkoutAssignmentsModule } from './workout-assignments/workout-assignments.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { DailyLogModule } from './daily-log/daily-log.module';
+import { UserProfileModule } from './user-profile/user-profile.module';
 
 @Module({
   imports: [
@@ -43,6 +45,8 @@ import { APP_GUARD } from '@nestjs/core';
     ProductsModule,
     ClientLinksModule,
     WorkoutAssignmentsModule,
+    DailyLogModule,
+    UserProfileModule,
   
   ],
 

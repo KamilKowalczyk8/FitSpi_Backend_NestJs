@@ -8,17 +8,18 @@ import {
 import { User } from 'src/users/user.entity'
 import { Product } from 'src/products/entities/product.entity'; 
 import { MealType } from './meal-type.enum';
+import { DailyLog } from 'src/daily-log/entities/daily-log.entity';
 
 @Entity('foods_log') 
 export class Food {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.foodLogs, { nullable: false })
-  user: User;
-
   @ManyToOne(() => Product, { nullable: false, eager: true })
   product: Product; 
+
+  @ManyToOne(() => DailyLog, (dailyLog) => dailyLog.foods,{ nullable: false, onDelete: 'CASCADE'})
+  dailyLog: DailyLog;
 
   @Column({ type: 'date' })
   date: Date; 
