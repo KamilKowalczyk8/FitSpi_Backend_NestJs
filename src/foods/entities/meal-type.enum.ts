@@ -4,5 +4,5 @@ export enum MealType {
   Obiad = 3,
   Przekaska = 4,
   Kolacja = 5,
-  Snack,
+  Snack = 6,
 }

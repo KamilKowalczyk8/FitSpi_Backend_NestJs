@@ -9,7 +9,6 @@ import { ExerciseTemplateModule } from './exercises_template/exercise-template.m
 import { FoodsModule } from './foods/foods.module';
 import { ProductsModule } from './products/products.module';
 import { ClientLinksModule } from './client-links/client-links.module';
-import { WorkoutAssignmentsModule } from './workout-assignments/workout-assignments.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { DailyLogModule } from './daily-log/daily-log.module';
@@ -44,7 +43,6 @@ import { UserProfileModule } from './user-profile/user-profile.module';
     FoodsModule,
     ProductsModule,
     ClientLinksModule,
-    WorkoutAssignmentsModule,
     DailyLogModule,
     UserProfileModule,
   

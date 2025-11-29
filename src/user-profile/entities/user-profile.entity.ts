@@ -18,22 +18,22 @@ export class UserProfile {
   id: number;
 
   @OneToOne(() => User, (user) => user.profile, { onDelete: 'CASCADE' })
-  @JoinColumn() // Ta kolumna fizycznie będzie w tabeli user_profiles jako `userId`
+  @JoinColumn() 
   user: User;
 
   @Column({ type: 'enum', enum: Gender })
   gender: Gender;
 
   @Column({ type: 'date' })
-  date_of_birth: string; // Na podstawie tego obliczysz wiek
+  date_of_birth: string; 
 
   @Column('float')
-  height_cm: number; // Wzrost w cm
+  height_cm: number; 
 
   @Column('float')
-  weight_kg: number; // Aktualna waga
+  weight_kg: number; 
 
-  // Typ pracy i aktywność fizyczna w jednym (współczynnik PAL)
+ 
   @Column({ 
     type: 'enum', 
     enum: ActivityLevel, 
@@ -48,22 +48,21 @@ export class UserProfile {
   })
   goal: DietGoal;
 
-  // Opcjonalnie: automatycznie wyliczone zapotrzebowanie (cache)
-  // Możesz to liczyć w locie, albo zapisać tutaj, żeby nie liczyć przy każdym zapytaniu
+  
   @Column('int', { nullable: true })
-  calculated_bmr: number; // Podstawowa przemiana (ile palisz leżąc)
+  calculated_bmr: number; 
 
   @Column('int', { nullable: true })
-  calculated_tdee: number; // Całkowita przemiana (ile jeść wg celu)
+  calculated_kcal: number; 
 
   @Column('int', { nullable: true })
-  calculated_protein: number; // Gramy
+  calculated_protein: number; 
 
   @Column('int', { nullable: true })
-  calculated_fat: number; // Gramy
+  calculated_fat: number; 
 
   @Column('int', { nullable: true })
-  calculated_carbs: number; // Gramy
+  calculated_carbs: number; 
 
   @CreateDateColumn()
   created_at: Date;

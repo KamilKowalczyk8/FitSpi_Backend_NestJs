@@ -8,6 +8,8 @@ import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetFoodByDayDto } from './dto/get-food-by-day.dto';
 import { CopyFoodDto } from './dto/copy-food.dto';
+import { use } from 'passport';
+import { CopyMealDto } from './dto/copy-meal.dto';
 
 @ApiTags('Foods')
 @ApiBearerAuth()
@@ -58,6 +60,18 @@ export class FoodsController {
   ){
     return this.foodsService.deleteFood(id,user)
   }
+
+  @Post('copy-meal')
+  @ApiOperation({ summary: 'Kopiuj daną sekcje (Obiad)'})
+  @ApiResponse({ status: 201, description: 'Produkty zostały skopiowane' })
+  @ApiResponse({ status: 404, description: 'Nie znaleziono produktów w dniu' })
+  copyMeal(
+    @GetUser() user: User,
+    @Body() dto: CopyMealDto,
+  ) {
+    return this.foodsService.copyMeal(user, dto);
+  }
+
 
   @Post('copy-day')
   @ApiOperation({ summary: 'Kopiuje wszystkie posiłki z jednego dnia na inny' })

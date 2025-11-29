@@ -7,6 +7,8 @@ import { Product } from 'src/products/entities/product.entity';
 import { User } from 'src/users/user.entity';
 import { Food } from './entities/food.entity';
 import { DailyLog } from 'src/daily-log/entities/daily-log.entity';
+import { UserProfile } from 'src/user-profile/entities/user-profile.entity';
+import { CopyMealDto } from './dto/copy-meal.dto';
 
 @Injectable()
 export class FoodsService {
@@ -16,7 +18,9 @@ export class FoodsService {
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
     @InjectRepository(DailyLog)
-    private readonly dailyLogRepo: Repository<DailyLog>
+    private readonly dailyLogRepo: Repository<DailyLog>,
+    @InjectRepository(UserProfile)
+    private readonly userProfileRepo: Repository<UserProfile>,
   ) {}
 
 
@@ -31,24 +35,24 @@ export class FoodsService {
     };
   }
 
-  private async ensureDailyLogExists(user: User, date: Date | string): Promise<DailyLog>{
+  private async ensureDailyLogExists(user: User, date: Date | string): Promise<DailyLog> {
     const dateString = new Date(date).toISOString().split('T')[0];
-
     const existingLog = await this.dailyLogRepo.findOne({
-      where: {
-        user: { user_id: user.user_id },
-        date: dateString,
-      },
+      where: { user: { user_id: user.user_id }, date: dateString },
     });
+    if (existingLog) return existingLog;
 
-    if(existingLog) {
-      return existingLog;
-    }
+    const profile = await this.userProfileRepo.findOne({
+        where: { user: { user_id: user.user_id } }
+    });
 
     const newLog = this.dailyLogRepo.create({
       user: user,
       date: dateString,
-      //TODO tutaj będą ustawienia usera jego zapotrzebowanie itd
+      target_kcal:    profile?.calculated_kcal    ?? 2000,
+      target_protein: profile?.calculated_protein ?? 150,
+      target_fat:     profile?.calculated_fat     ?? 70,
+      target_carbs:   profile?.calculated_carbs   ?? 200,
     });
 
     return await this.dailyLogRepo.save(newLog);
@@ -124,6 +128,43 @@ export class FoodsService {
     return { message: 'Wpis został usunięty'};
   }
 
+  async copyMeal(user: User, dto: CopyMealDto): Promise<Food[]> {
+    const sourceString = new Date(dto.sourceDate).toISOString().split('T')[0];
+
+    const entriesToCopy = await this.foodRepo.find({
+      where: {
+        dailyLog: {
+          user: { user_id: user.user_id },
+          date: sourceString
+        },
+        meal: dto.meal
+      },
+      relations: ['product'],
+    });
+
+    if (entriesToCopy.length === 0) {
+      throw new NotFoundException('Brak produktów w tym posiłku');
+    }
+
+    const targetLog = await this.ensureDailyLogExists(user, dto.targetDate);
+
+    const newEntries = entriesToCopy.map((entry) => {
+      return this.foodRepo.create({
+        dailyLog: targetLog,
+        product: entry.product,
+        meal: entry.meal,
+        grams: entry.grams,
+        kcal: entry.kcal,
+        protein: entry.protein,
+        carbs: entry.carbs,
+        fats: entry.fats,
+        date: dto.targetDate,
+      });
+    });
+
+    return await this.foodRepo.save(newEntries);
+  }
+
   async copyDayFood(user: User, sourceDate: Date, targetDate: Date): Promise<Food[]> {
     const sourceLog = await this.dailyLogRepo.findOne({
         where: { 
@@ -159,39 +200,49 @@ export class FoodsService {
     const dateString = new Date(date).toISOString().split('T')[0];
 
     const dailyLog = await this.dailyLogRepo.findOne({
-        where: {
-            user: { user_id: user.user_id },
-            date: dateString
-        },
+        where: { user: { user_id: user.user_id }, date: dateString },
         relations: ['foods', 'foods.product'],
-        order: {
-            foods: { meal: 'ASC' }
-        }
+        order: { foods: { meal: 'ASC' } }
     });
 
-    if (!dailyLog) {
-        return null;
+    if (dailyLog) {
+        const consumed = dailyLog.foods.reduce((acc, item) => ({
+            kcal: acc.kcal + item.kcal,
+            protein: acc.protein + item.protein,
+            carbs: acc.carbs + item.carbs,
+            fats: acc.fats + item.fats
+        }), { kcal: 0, protein: 0, carbs: 0, fats: 0 });
+
+        return {
+            date: dailyLog.date,
+            targets: {
+                kcal: dailyLog.target_kcal,
+                protein: dailyLog.target_protein,
+                fat: dailyLog.target_fat,
+                carbs: dailyLog.target_carbs
+            },
+            summary: consumed,
+            foods: dailyLog.foods
+        };
     }
 
-    const consumed = dailyLog.foods.reduce((acc, item) => ({
-        kcal: acc.kcal + item.kcal,
-        protein: acc.protein + item.protein,
-        carbs: acc.carbs + item.carbs,
-        fats: acc.fats + item.fats
-    }), { kcal: 0, protein: 0, carbs: 0, fats: 0 });
+    const profile = await this.userProfileRepo.findOne({
+        where: { user: { user_id: user.user_id } }
+    });
+
+    const defaultTargets = {
+        kcal: profile?.calculated_kcal || 2000,
+        protein: profile?.calculated_protein || 150,
+        fat: profile?.calculated_fat || 70,
+        carbs: profile?.calculated_carbs || 200,
+    };
 
     return {
-        id: dailyLog.id,
-        date: dailyLog.date,
-        targets: {
-            kcal: dailyLog.target_kcal,
-            protein: dailyLog.target_protein,
-            fat: dailyLog.target_fat,
-            carbs: dailyLog.target_carbs
-        },
-        summary: consumed,
-        foods: dailyLog.foods
+        date: dateString,
+        targets: defaultTargets, 
+        summary: { kcal: 0, protein: 0, carbs: 0, fats: 0 },
+        foods: []
     };
-  }
+}
 
 }
