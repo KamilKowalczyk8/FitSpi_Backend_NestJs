@@ -8,7 +8,6 @@ import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetFoodByDayDto } from './dto/get-food-by-day.dto';
 import { CopyFoodDto } from './dto/copy-food.dto';
-import { use } from 'passport';
 import { CopyMealDto } from './dto/copy-meal.dto';
 
 @ApiTags('Foods')

@@ -18,6 +18,7 @@ export class CreateWorkoutInput {
     required: false,
     description: 'Typ treningu: 1 = Training, 2 = Rest',
   })
+  
   @IsOptional()
   @IsEnum(WorkoutType)
   workout_type?: WorkoutType;

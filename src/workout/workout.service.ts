@@ -23,6 +23,7 @@ export class WorkoutService {
 
         @InjectRepository(ClientLink)
         private readonly clientLinkRepo: Repository<ClientLink>,
+
         @InjectRepository(Exercise)
         private readonly exerciseRepo: Repository<Exercise>,
     ) {}
@@ -302,7 +303,6 @@ export class WorkoutService {
             'Nie znalezniono treningu lub nie masz do niego uprawnien',
         );
       }
-
       const newWorkout = this.workoutRepo.create({
         description: originalWorkout.description,
         workout_type: originalWorkout.workout_type,
@@ -335,7 +335,6 @@ export class WorkoutService {
        }
       }
       originalWorkout.status = WorkoutStatus.DOWNLOADED;
-
       await this.workoutRepo.save(originalWorkout);
 
       console.log(

@@ -37,7 +37,7 @@ export class WorkoutController {
     }
 
     @Get()
-    @ApiOperation({ summary: 'Pobierz treningi (domyślnie tylko zaakceptowane, chyba że podasz status)' })
+    @ApiOperation({ summary: 'Pobierz treningi (domyślnie tylko z statusem accepted' })
     @ApiQuery({ name: 'status', enum: WorkoutStatus, required: false }) 
     findAll(
         @GetUser() user: User,
@@ -77,7 +77,6 @@ export class WorkoutController {
     );
     }
 
-
     @Get('client/:clientId/from-trainer')
     @ApiOperation({ summary: 'Treningi które zostały stworzone przez trenera dla danego podopiecznego' })
     getClientWorkoutsFromTrainer(
@@ -90,9 +89,8 @@ export class WorkoutController {
         );
     }
 
-
     @Post('user/:clientId')
-    @ApiOperation({ summary: '[TRENER] Wyślij propozycję treningu do podopiecznego' })
+    @ApiOperation({ summary: '[TRENER] Stwórz propozycję treningu do podopiecznego' })
     createForClient(
         @Param('clientId', ParseIntPipe) clientId: number,
         @Body() dto: CreateWorkoutInput,
@@ -100,6 +98,7 @@ export class WorkoutController {
     ) {
         return this.workoutService.createProposalForClient(dto, clientId, trainer.user_id)
     }
+
     @Patch(':id/send')
     @ApiOperation({ summary: '[TRENER] Wyślij szkic treningu do podopiecznego (Draft -> Pending)' })
     sendToClient(
@@ -108,8 +107,6 @@ export class WorkoutController {
     ) {
         return this.workoutService.sendWorkoutToClient(workoutId, trainer.user_id);
     }
-
-
 
     @Patch(':id/accept')
     @ApiOperation({ summary: '[KLIENT] Zaakceptuj trening i ustaw datę' })

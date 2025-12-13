@@ -4,7 +4,6 @@ import { IsDataURI, IsDate, IsEnum, IsInt, IsNumber, IsPositive } from "class-va
 import { MealType } from "../entities/meal-type.enum";
 
 export class CreateFoodDto {
-
     @ApiProperty()
     @IsInt()
     productId: number;

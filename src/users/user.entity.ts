@@ -48,7 +48,6 @@ export class User {
     @UpdateDateColumn({ type: 'timestamp' })
     updated_at: Date;
 
-    // Hashowanie hasła przed zapisaniem/aktualizacją
     @BeforeInsert()
     @BeforeUpdate()
     async hashPassword() {

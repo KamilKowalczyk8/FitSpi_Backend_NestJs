@@ -27,9 +27,6 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       CORS_ORIGIN: ${CORS_ORIGIN}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}
     env_file: .env
     ports:
       - "4000:4000"
@@ -37,14 +34,7 @@ services:
       - .:/app 
       - /app/node_modules
       - node_modules_data:/app/node_modules
-      
-  # Prometheus i Grafana są wyłączone
-  # prometheus:
-  # ...
-  # grafana:
-  # ...
 
 volumes:
   pgdata:
   node_modules_data:
-  # grafana-storage:
