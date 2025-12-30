@@ -8,7 +8,6 @@ import { User } from '../users/user.entity';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
-import { GoogleStrategy } from './strategies/google.strategy';
 import { MatchPasswords } from "./validators/match-passwords.validator";
 
 @Module({
@@ -35,7 +34,6 @@ import { MatchPasswords } from "./validators/match-passwords.validator";
         AuthService,
         JwtStrategy,
         JwtRefreshStrategy,
-        GoogleStrategy,
         MatchPasswords,     
     ],
     exports: [
