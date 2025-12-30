@@ -30,6 +30,9 @@ import { UserProfileModule } from './user-profile/user-profile.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: true,
+      ssl: {
+        rejectUnauthorized: false, 
+      },
       autoLoadEntities: true,
       logging: ['query', 'error'],
       logger: 'advanced-console',
