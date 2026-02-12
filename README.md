@@ -10,41 +10,41 @@ Projekt stanowi część pracy inżynierskiej zrealizowanej na kierunku Informat
 
 > **Uwaga:** To repozytorium zawiera kod serwera. Kod aplikacji mobilnej (Frontend) znajduje się tutaj: https://github.com/KamilKowalczyk8/FitSpi_React_Native
 
-## 🛠️ Stack Technologiczny
+##  Stack Technologiczny
 
 Backend został zaprojektowany z naciskiem na skalowalność, bezpieczeństwo i modułowość.
 
-* [cite_start]**Framework:** [NestJS](https://nestjs.com/) (Node.js) – architektura modułowa inspirowana Angular[cite: 1776].
-* [cite_start]**Język:** TypeScript – pełne typowanie statyczne[cite: 1772].
-* [cite_start]**Baza danych:** PostgreSQL (Relacyjna baza danych)[cite: 1787].
-* [cite_start]**ORM:** TypeORM – mapowanie obiektowo-relacyjne, migracje, relacje (OneToMany, ManyToOne)[cite: 1802].
-* [cite_start]**Konteneryzacja:** Docker & Docker Compose[cite: 1815].
+* **Framework:** [NestJS](https://nestjs.com/) (Node.js) – architektura modułowa inspirowana Angular.
+* **Język:** TypeScript – pełne typowanie statyczne.
+* **Baza danych:** PostgreSQL (Relacyjna baza danych).
+* **ORM:** TypeORM – mapowanie obiektowo-relacyjne, migracje, relacje (OneToMany, ManyToOne).
+* **Konteneryzacja:** Docker & Docker Compose.
 
-## 🔐 Bezpieczeństwo i Autoryzacja
+##  Bezpieczeństwo i Autoryzacja
 
-[cite_start]W projekcie wdrożono wielowarstwowe mechanizmy bezpieczeństwa[cite: 2295]:
+W projekcie wdrożono wielowarstwowe mechanizmy bezpieczeństwa:
 
-* [cite_start]**JWT (JSON Web Token):** Uwierzytelnianie bezstanowe (Stateless) z użyciem strategii Passport.js[cite: 2273].
-* [cite_start]**Role-Based Access Control (RBAC):** System ról (`Admin`, `User`, `Trainer`) chroniący dostęp do specyficznych endpointów (Guardy)[cite: 2334].
-* [cite_start]**Haszowanie haseł:** Wykorzystanie algorytmu **Bcrypt** z mechanizmem "solenia"[cite: 2296].
-* [cite_start]**Walidacja danych:** Globalny `ValidationPipe` z wykorzystciem `class-validator` (DTO) chroniący przed błędnymi danymi[cite: 2306].
+* **JWT (JSON Web Token):** Uwierzytelnianie bezstanowe (Stateless) z użyciem strategii Passport.js.
+* **Role-Based Access Control (RBAC):** System ról (`Admin`, `User`, `Trainer`) chroniący dostęp do specyficznych endpointów (Guardy).
+* **Haszowanie haseł:** Wykorzystanie algorytmu **Bcrypt** z mechanizmem "solenia".
+* **Walidacja danych:** Globalny `ValidationPipe` z wykorzystciem `class-validator` (DTO) chroniący przed błędnymi danymi.
 * **Ochrona API:**
-    * [cite_start]**Helmet:** Zabezpieczenie nagłówków HTTP[cite: 2361].
-    * [cite_start]**Throttler (Rate Limiting):** Ochrona przed atakami Brute Force i DDoS[cite: 2345].
-    * [cite_start]**SQL Injection:** Ochrona poprzez parametryzację zapytań w TypeORM[cite: 2365].
+    * **Helmet:** Zabezpieczenie nagłówków HTTP.
+    * **Throttler (Rate Limiting):** Ochrona przed atakami Brute Force i DDoS.
+    * **SQL Injection:** Ochrona poprzez parametryzację zapytań w TypeORM.
 
-## 🏗️ Architektura i Moduły
+##  Architektura i Moduły
 
-[cite_start]Aplikacja podzielona jest na domeny logiczne[cite: 2220]:
+Aplikacja podzielona jest na domeny logiczne:
 
 * **AuthModule:** Logowanie, rejestracja, generowanie tokenów JWT.
-* [cite_start]**WorkoutModule:** Zarządzanie planami treningowymi, statusami (Szkic -> Wysłany -> Zaakceptowany) i logiką kopiowania treningów[cite: 2226].
+* **WorkoutModule:** Zarządzanie planami treningowymi, statusami (Szkic -> Wysłany -> Zaakceptowany) i logiką kopiowania treningów.
 * **ExerciseModule:** Baza ćwiczeń i ich parametrów.
-* [cite_start]**ClientLinksModule:** Obsługa relacji Trener-Podopieczny (zaproszenia, status współpracy)[cite: 2234].
-* [cite_start]**DietModule (Foods/Products/DailyLog):** Zarządzanie dziennikiem żywieniowym, bazą produktów i wyliczanie makroskładników[cite: 2230].
-* [cite_start]**UserProfileModule:** Zarządzanie biometrią i automatyczne wyliczanie zapotrzebowania (BMR/CPM)[cite: 2237].
+* **ClientLinksModule:** Obsługa relacji Trener-Podopieczny (zaproszenia, status współpracy).
+* **DietModule (Foods/Products/DailyLog):** Zarządzanie dziennikiem żywieniowym, bazą produktów i wyliczanie makroskładników.
+* **UserProfileModule:** Zarządzanie biometrią i automatyczne wyliczanie zapotrzebowania (BMR/CPM).
 
-## ⚙️ Instalacja i Uruchomienie
+##  Instalacja i Uruchomienie
 
 Projekt jest w pełni skonteneryzowany, co zalecam jako główną metodę uruchamiania.
 
@@ -53,7 +53,7 @@ Projekt jest w pełni skonteneryzowany, co zalecam jako główną metodę urucha
 * Node.js (opcjonalnie, do uruchamiania lokalnego bez Dockera)
 
 ### Krok 1: Konfiguracja zmiennych środowiskowych
-[cite_start]Utwórz plik `.env` w głównym katalogu projektu na podstawie poniższego wzoru[cite: 3085]:
+Utwórz plik `.env` w głównym katalogu projektu na podstawie poniższego wzoru:
 
 ```env
 # Konfiguracja Bazy Danych
@@ -93,3 +93,4 @@ Umożliwia ona testowanie endpointów i autoryzacji bezpośrednio z przeglądark
 Projekt zawiera testy jednostkowe (Unit Tests) wykorzystujące framework Jest.
 
 **npm run test**
+
