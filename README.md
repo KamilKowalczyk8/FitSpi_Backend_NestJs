@@ -2,97 +2,94 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# FitSpi (Backend) - REST API
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**FitSpi API** to warstwa serwerowa (backend) systemu fitness, zrealizowana w oparciu o framework **NestJS**. Aplikacja dostarcza logikę biznesową, zarządza bazą danych oraz zapewnia bezpieczną komunikację dla aplikacji mobilnej.
 
-## Description
+Projekt stanowi część pracy inżynierskiej zrealizowanej na kierunku Informatyka (Uniwersytet Dolnośląski DSW).
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+> **Uwaga:** To repozytorium zawiera kod serwera. Kod aplikacji mobilnej (Frontend) znajduje się tutaj: https://github.com/KamilKowalczyk8/FitSpi_React_Native
 
-## Project setup
+## 🛠️ Stack Technologiczny
 
-```bash
-$ npm install
+Backend został zaprojektowany z naciskiem na skalowalność, bezpieczeństwo i modułowość.
+
+* [cite_start]**Framework:** [NestJS](https://nestjs.com/) (Node.js) – architektura modułowa inspirowana Angular[cite: 1776].
+* [cite_start]**Język:** TypeScript – pełne typowanie statyczne[cite: 1772].
+* [cite_start]**Baza danych:** PostgreSQL (Relacyjna baza danych)[cite: 1787].
+* [cite_start]**ORM:** TypeORM – mapowanie obiektowo-relacyjne, migracje, relacje (OneToMany, ManyToOne)[cite: 1802].
+* [cite_start]**Konteneryzacja:** Docker & Docker Compose[cite: 1815].
+
+## 🔐 Bezpieczeństwo i Autoryzacja
+
+[cite_start]W projekcie wdrożono wielowarstwowe mechanizmy bezpieczeństwa[cite: 2295]:
+
+* [cite_start]**JWT (JSON Web Token):** Uwierzytelnianie bezstanowe (Stateless) z użyciem strategii Passport.js[cite: 2273].
+* [cite_start]**Role-Based Access Control (RBAC):** System ról (`Admin`, `User`, `Trainer`) chroniący dostęp do specyficznych endpointów (Guardy)[cite: 2334].
+* [cite_start]**Haszowanie haseł:** Wykorzystanie algorytmu **Bcrypt** z mechanizmem "solenia"[cite: 2296].
+* [cite_start]**Walidacja danych:** Globalny `ValidationPipe` z wykorzystciem `class-validator` (DTO) chroniący przed błędnymi danymi[cite: 2306].
+* **Ochrona API:**
+    * [cite_start]**Helmet:** Zabezpieczenie nagłówków HTTP[cite: 2361].
+    * [cite_start]**Throttler (Rate Limiting):** Ochrona przed atakami Brute Force i DDoS[cite: 2345].
+    * [cite_start]**SQL Injection:** Ochrona poprzez parametryzację zapytań w TypeORM[cite: 2365].
+
+## 🏗️ Architektura i Moduły
+
+[cite_start]Aplikacja podzielona jest na domeny logiczne[cite: 2220]:
+
+* **AuthModule:** Logowanie, rejestracja, generowanie tokenów JWT.
+* [cite_start]**WorkoutModule:** Zarządzanie planami treningowymi, statusami (Szkic -> Wysłany -> Zaakceptowany) i logiką kopiowania treningów[cite: 2226].
+* **ExerciseModule:** Baza ćwiczeń i ich parametrów.
+* [cite_start]**ClientLinksModule:** Obsługa relacji Trener-Podopieczny (zaproszenia, status współpracy)[cite: 2234].
+* [cite_start]**DietModule (Foods/Products/DailyLog):** Zarządzanie dziennikiem żywieniowym, bazą produktów i wyliczanie makroskładników[cite: 2230].
+* [cite_start]**UserProfileModule:** Zarządzanie biometrią i automatyczne wyliczanie zapotrzebowania (BMR/CPM)[cite: 2237].
+
+## ⚙️ Instalacja i Uruchomienie
+
+Projekt jest w pełni skonteneryzowany, co zalecam jako główną metodę uruchamiania.
+
+### Wymagania
+* Docker & Docker Compose
+* Node.js (opcjonalnie, do uruchamiania lokalnego bez Dockera)
+
+### Krok 1: Konfiguracja zmiennych środowiskowych
+[cite_start]Utwórz plik `.env` w głównym katalogu projektu na podstawie poniższego wzoru[cite: 3085]:
+
+```env
+# Konfiguracja Bazy Danych
+DB_HOST=postgres
+DB_PORT=5432
+DB_USER=twoj_user
+DB_PASSWORD=twoje_haslo
+DB_NAME=fitspi_db
+
+# Konfiguracja JWT
+JWT_SECRET=tajny_klucz_jwt
+JWT_REFRESH_SECRET=tajny_klucz_refresh
+
+# Inne
+PORT=4000
+CORS_ORIGIN=*
+
 ```
 
-## Compile and run the project
+### Krok 2: Uruchomienie z Dockerem
 
-```bash
-# development
-$ npm run start
+Uruchomienie bazy danych PostgreSQL oraz aplikacji API jednym poleceniem:
+**docker-compose up --build**
 
-# watch mode
-$ npm run start:dev
 
-# production mode
-$ npm run start:prod
-```
+### Dokumentacja API (Swagger)
+Aplikacja posiada automatycznie generowaną dokumentację w standardzie OpenAPI (Swagger).
+Po uruchomieniu serwera dokumentacja jest dostępna pod adresem:
 
-## Run tests
+**http://localhost:4000/api/docs**
 
-```bash
-# unit tests
-$ npm run test
+Umożliwia ona testowanie endpointów i autoryzacji bezpośrednio z przeglądarki.
 
-# e2e tests
-$ npm run test:e2e
 
-# test coverage
-$ npm run test:cov
-```
+### Testowanie
 
-## Deployment
+Projekt zawiera testy jednostkowe (Unit Tests) wykorzystujące framework Jest.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**npm run test**
