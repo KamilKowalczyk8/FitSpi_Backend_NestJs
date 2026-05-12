@@ -1,7 +1,3 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
 # FitSpi (Backend) - REST API
 
 **FitSpi API** to warstwa serwerowa (backend) systemu fitness, zrealizowana w oparciu o framework **NestJS**. Aplikacja dostarcza logikę biznesową, zarządza bazą danych oraz zapewnia bezpieczną komunikację dla aplikacji mobilnej.
@@ -14,10 +10,10 @@ Projekt stanowi część pracy inżynierskiej zrealizowanej na kierunku Informat
 
 Backend został zaprojektowany z naciskiem na skalowalność, bezpieczeństwo i modułowość.
 
-* **Framework:** [NestJS](https://nestjs.com/) (Node.js) – architektura modułowa inspirowana Angular.
-* **Język:** TypeScript – pełne typowanie statyczne.
+* **Framework:** [NestJS](https://nestjs.com/) (Node.js) - architektura modułowa inspirowana Angular.
+* **Język:** TypeScript - pełne typowanie statyczne.
 * **Baza danych:** PostgreSQL (Relacyjna baza danych).
-* **ORM:** TypeORM – mapowanie obiektowo-relacyjne, migracje, relacje (OneToMany, ManyToOne).
+* **ORM:** TypeORM - mapowanie obiektowo-relacyjne, migracje, relacje (OneToMany, ManyToOne).
 * **Konteneryzacja:** Docker & Docker Compose.
 
 ##  Bezpieczeństwo i Autoryzacja
